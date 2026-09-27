@@ -9,7 +9,7 @@ Marginalis estimates marginal emissions factors from public EIA-930 hourly data
 for three US balancing authorities (ERCOT, CAISO, MISO), 2019-07 → 2026-08,
 and measures how often scheduling by average intensity picks a worse hour.
 
-> Status: pipeline under construction. No results yet.
+**Live:** <https://marginalis-5xm3.onrender.com> (read-only; free tier, so the first request after idle can take ~1 minute to wake).
 
 ## Methodology
 
@@ -85,4 +85,6 @@ re-estimated in production.
   production.
 - No HTTP route reaches them.
 
-`/api/ask` is limited to `ASK_RATE_PER_MINUTE` (default 5) requests per IP per minute.
+`/api/ask` is limited to `ASK_RATE_PER_MINUTE` (default 5) requests per client per minute. The client
+key is Cloudflare's `CF-Connecting-IP`, not `X-Forwarded-For`: on Render, a client-sent first
+`X-Forwarded-For` entry passes through unchanged, so keying on it lets the limit be bypassed.
