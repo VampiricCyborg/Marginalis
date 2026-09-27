@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 
 import pandas as pd
 
 from marginalis.analysis import exclusions as ex
 from marginalis.analysis import holdout as ho
-from marginalis.analysis.data import read_mef_profile, read_split
+from marginalis.analysis.data import read_fuel_mix, read_mef_profile, read_split, read_view
 from marginalis.analysis.findings import OVERNIGHT, _md, pooled_estimate, window_comparison
 from marginalis.config import BAS, HOLDOUT, HOLDOUT_YTD, METHOD_FROZEN, REPORTS_DIR
 
@@ -229,4 +230,39 @@ def run() -> str:
         "imports not counted).")
     text = "\n".join(L)
     (REPORTS_DIR / "holdout_results.md").write_text(text, encoding="utf-8")
+    write_json(res, no_rule, decision, eda_pred)
     return text
+
+
+def _records(df: pd.DataFrame) -> list[dict]:
+    return json.loads(df.to_json(orient="records", date_format="iso"))
+
+
+def write_json(res, no_rule, decision, eda_pred) -> None:
+    """Machine-readable results for the API (same numbers as the markdown report)."""
+    h_tr, d_tr, f_tr = read_view("v_hour_train"), read_view("v_hour_delta_train"), read_fuel_mix()
+    bad_tr = ex.gas_as_other_days(f_tr, h_tr)
+    train_overnight = {}
+    for i, src in enumerate(SOURCES):
+        r = pooled_estimate(d_tr, h_tr, bad_tr, "MISO", OVERNIGHT, src, 1 + i)  # same seeds as the EDA
+        train_overnight[src] = {"mef": r.mef, "ci_low": r.ci_low, "ci_high": r.ci_high, "average": r.avg, "n": r.n_obs}
+    out = {
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "frozen_commit": "000f910",
+        "threshold_kg_per_mwh": ho.THRESHOLD_KG,
+        "primary_w": ho.W_PRIMARY,
+        "overnight_local_hours": [min(OVERNIGHT), max(OVERNIGHT) + 1],
+        "decision": {ba: bool(v) for ba, v in decision.items()},
+        "eda_predicted_gap": {f"{b}|{s}": float(v) for (b, s), v in eda_pred.items()},
+        "train_miso_overnight": train_overnight,
+        "periods": {
+            r["split"].name: {
+                "start": r["split"].start.isoformat(), "end": r["split"].end.isoformat(),
+                "main": _records(r["main"]), "sensitivity": _records(r["sens"]),
+                "predictive": _records(r["pred"]), "miso_overnight": _records(r["overnight"]),
+                "gas_as_other_days": _records(r["bad_days"]),
+            } for r in res
+        },
+        "no_gas_rule_sensitivity": {name: _records(r["main"]) for name, r in no_rule.items()},
+    }
+    (REPORTS_DIR / "holdout_results.json").write_text(json.dumps(out, indent=2), encoding="utf-8")

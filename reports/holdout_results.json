@@ -1,0 +1,1070 @@
+{
+  "generated_at": "2026-09-27T09:52:31+00:00",
+  "frozen_commit": "000f910",
+  "threshold_kg_per_mwh": 50.0,
+  "primary_w": 4,
+  "overnight_local_hours": [
+    0,
+    5
+  ],
+  "decision": {
+    "ERCO": false,
+    "CISO": false,
+    "MISO": true
+  },
+  "eda_predicted_gap": {
+    "CISO|derived": 81.51121862658275,
+    "CISO|eia": 77.61011077800991,
+    "ERCO|derived": 181.28494809572337,
+    "ERCO|eia": 191.48473833549994,
+    "MISO|derived": 211.57537166797727,
+    "MISO|eia": 213.4423831237796
+  },
+  "train_miso_overnight": {
+    "eia": {
+      "mef": 731.879475410352,
+      "ci_low": 702.8282785654726,
+      "ci_high": 759.8909842659523,
+      "average": 459.0095874968207,
+      "n": 10047
+    },
+    "derived": {
+      "mef": 718.8539036552356,
+      "ci_low": 690.2426371535064,
+      "ci_high": 748.6830839655465,
+      "average": 449.8819636587657,
+      "n": 10047
+    }
+  },
+  "periods": {
+    "holdout_2025": {
+      "start": "2025-01-01T00:00:00+00:00",
+      "end": "2026-01-01T00:00:00+00:00",
+      "main": [
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "W": 4,
+          "days": 364,
+          "days windows differ": 334,
+          "realised": 157.2465914512,
+          "ci_low": -50.9581542881,
+          "ci_high": 276.891688489,
+          "predicted": 191.4661095604,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 6.55,
+          "avg intensity, marginal windows": 326.3859972937,
+          "avg intensity, average windows": 325.8712410636,
+          "meets rule": false,
+          "EDA predicted": 191.4847383355,
+          "vs EDA": "held",
+          "vs same-days prediction": "held",
+          "realised / EDA": 0.8211964714
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "W": 4,
+          "days": 364,
+          "days windows differ": 334,
+          "realised": 147.960151387,
+          "ci_low": -48.585989351,
+          "ci_high": 257.5894091673,
+          "predicted": 181.1487213142,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.7,
+          "avg intensity, marginal windows": 311.1701763894,
+          "avg intensity, average windows": 310.7165543486,
+          "meets rule": false,
+          "EDA predicted": 181.2849480957,
+          "vs EDA": "held",
+          "vs same-days prediction": "held",
+          "realised / EDA": 0.8161744973
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "W": 4,
+          "days": 364,
+          "days windows differ": 333,
+          "realised": 21.4514483402,
+          "ci_low": -1.8216440204,
+          "ci_high": 55.2724784907,
+          "predicted": 78.0859629698,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 6.95,
+          "avg intensity, marginal windows": 184.1702976446,
+          "avg intensity, average windows": 175.3644442137,
+          "meets rule": false,
+          "EDA predicted": 77.610110778,
+          "vs EDA": "overstated",
+          "vs same-days prediction": "overstated",
+          "realised / EDA": 0.2764001768
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "W": 4,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 23.0687636649,
+          "ci_low": -4.6548938779,
+          "ci_high": 56.6300415464,
+          "predicted": 82.0738332057,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.85,
+          "avg intensity, marginal windows": 183.2500396231,
+          "avg intensity, average windows": 174.0405276604,
+          "meets rule": false,
+          "EDA predicted": 81.5112186266,
+          "vs EDA": "overstated",
+          "vs same-days prediction": "overstated",
+          "realised / EDA": 0.2830133576
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "W": 4,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 229.9171611278,
+          "ci_low": 44.4631307855,
+          "ci_high": 420.4224578774,
+          "predicted": 214.853332361,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.7,
+          "avg intensity, marginal windows": 461.869234015,
+          "avg intensity, average windows": 449.3535653134,
+          "meets rule": true,
+          "EDA predicted": 213.4423831238,
+          "vs EDA": "held",
+          "vs same-days prediction": "held",
+          "realised / EDA": 1.0771860666
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "W": 4,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 242.5246793753,
+          "ci_low": 57.8474311669,
+          "ci_high": 438.1271901048,
+          "predicted": 213.0448062217,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 6.95,
+          "avg intensity, marginal windows": 451.7566479265,
+          "avg intensity, average windows": 439.5981840619,
+          "meets rule": true,
+          "EDA predicted": 211.575371668,
+          "vs EDA": "held",
+          "vs same-days prediction": "held",
+          "realised / EDA": 1.1462802946
+        }
+      ],
+      "sensitivity": [
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "W": 2,
+          "days": 364,
+          "days windows differ": 334,
+          "realised": 308.8744345953,
+          "ci_low": 0.5692456557,
+          "ci_high": 565.3857861368,
+          "predicted": 352.0022041045,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 6.55
+        },
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "W": 6,
+          "days": 364,
+          "days windows differ": 334,
+          "realised": 96.7022064097,
+          "ci_low": -68.6863925064,
+          "ci_high": 183.8185429342,
+          "predicted": 132.2937993491,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 6.55
+        },
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "W": 8,
+          "days": 364,
+          "days windows differ": 304,
+          "realised": 92.2122110177,
+          "ci_low": -20.0076429891,
+          "ci_high": 169.9509747279,
+          "predicted": 119.879793492,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.85
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "W": 2,
+          "days": 364,
+          "days windows differ": 334,
+          "realised": 290.8626126454,
+          "ci_low": 29.295194165,
+          "ci_high": 520.6315438645,
+          "predicted": 338.2495591045,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.7
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "W": 6,
+          "days": 364,
+          "days windows differ": 334,
+          "realised": 89.3368834739,
+          "ci_low": -75.6065123824,
+          "ci_high": 170.6027516153,
+          "predicted": 124.5314080845,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.7
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "W": 8,
+          "days": 364,
+          "days windows differ": 304,
+          "realised": 88.9583957281,
+          "ci_low": -11.0867645685,
+          "ci_high": 157.8260472691,
+          "predicted": 116.668379012,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.75
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "W": 2,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 49.9153361362,
+          "ci_low": -23.6101969422,
+          "ci_high": 123.2381322817,
+          "predicted": 135.9371520981,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 7.6
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "W": 6,
+          "days": 364,
+          "days windows differ": 333,
+          "realised": 19.0861763093,
+          "ci_low": -1.6792360642,
+          "ci_high": 51.1110164567,
+          "predicted": 66.163303239,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 6.85
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "W": 8,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 24.1218143209,
+          "ci_low": 8.4266357837,
+          "ci_high": 47.1041653006,
+          "predicted": 64.62140105,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 7.6
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "W": 2,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 53.7214029718,
+          "ci_low": -22.1872201658,
+          "ci_high": 134.6808385192,
+          "predicted": 136.8130349544,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.85
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "W": 6,
+          "days": 364,
+          "days windows differ": 333,
+          "realised": 21.2922753621,
+          "ci_low": 0.1675801035,
+          "ci_high": 47.1950895467,
+          "predicted": 62.1247703266,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.25
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "W": 8,
+          "days": 364,
+          "days windows differ": 333,
+          "realised": 21.5770993795,
+          "ci_low": 3.5744516039,
+          "ci_high": 41.9472349303,
+          "predicted": 64.69095378,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.25
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "W": 2,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 233.3355750796,
+          "ci_low": -111.2707800788,
+          "ci_high": 419.3050916751,
+          "predicted": 253.9166476381,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.7
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "W": 6,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 106.318257016,
+          "ci_low": -29.5946381153,
+          "ci_high": 223.3671922165,
+          "predicted": 164.6237772034,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.7
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "W": 8,
+          "days": 364,
+          "days windows differ": 336,
+          "realised": 88.847959308,
+          "ci_low": -8.4467520026,
+          "ci_high": 163.9864040165,
+          "predicted": 147.7134419428,
+          "min_stratum_n": 30,
+          "dropped_replicates_pct": 5.15
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "W": 2,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 224.9379033276,
+          "ci_low": -108.0313861218,
+          "ci_high": 402.9469627427,
+          "predicted": 253.2643251309,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 6.95
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "W": 6,
+          "days": 364,
+          "days windows differ": 364,
+          "realised": 112.5554165359,
+          "ci_low": -35.7836131791,
+          "ci_high": 238.0843998673,
+          "predicted": 163.7248633557,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 6.95
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "W": 8,
+          "days": 364,
+          "days windows differ": 336,
+          "realised": 86.830661517,
+          "ci_low": -15.8451442197,
+          "ci_high": 166.1360740694,
+          "predicted": 150.0382360611,
+          "min_stratum_n": 30,
+          "dropped_replicates_pct": 6.7
+        }
+      ],
+      "predictive": [
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "n": 8710,
+          "r2_marginal": 0.1045220564,
+          "calib_marginal": 0.5886344773,
+          "r2_average": 0.0681243679,
+          "calib_average": 0.6176386318
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "n": 8734,
+          "r2_marginal": 0.0953381585,
+          "calib_marginal": 0.5796602396,
+          "r2_average": 0.0628066674,
+          "calib_average": 0.6080543607
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "n": 8704,
+          "r2_marginal": 0.151090328,
+          "calib_marginal": 0.6236904702,
+          "r2_average": 0.2072772569,
+          "calib_average": 0.7368120962
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "n": 8754,
+          "r2_marginal": 0.129113644,
+          "calib_marginal": 0.6056068448,
+          "r2_average": 0.1957642457,
+          "calib_average": 0.7273409643
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "n": 8735,
+          "r2_marginal": 0.5853278408,
+          "calib_marginal": 0.8362686727,
+          "r2_average": 0.6109664182,
+          "calib_average": 1.0905760995
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "n": 8759,
+          "r2_marginal": 0.5724406985,
+          "calib_marginal": 0.8269978431,
+          "r2_average": 0.6021878174,
+          "calib_average": 1.0808316096
+        }
+      ],
+      "miso_overnight": [
+        {
+          "source": "eia",
+          "MEF": 632.3767755517,
+          "CI low": 554.864959827,
+          "CI high": 710.2544777407,
+          "average": 452.4212025562,
+          "n": 1820
+        },
+        {
+          "source": "derived",
+          "MEF": 611.6928459785,
+          "CI low": 531.1629908324,
+          "CI high": 689.7412393101,
+          "average": 442.6029674673,
+          "n": 1825
+        }
+      ],
+      "gas_as_other_days": []
+    },
+    "holdout_2026ytd": {
+      "start": "2026-01-01T00:00:00+00:00",
+      "end": "2026-09-01T00:00:00+00:00",
+      "main": [
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "W": 4,
+          "days": 242,
+          "days windows differ": 212,
+          "realised": 208.6871084924,
+          "ci_low": -111.3436839497,
+          "ci_high": 440.8382786344,
+          "predicted": 203.9375012565,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 3.95,
+          "avg intensity, marginal windows": 316.5214867135,
+          "avg intensity, average windows": 314.9705181981,
+          "meets rule": false,
+          "EDA predicted": 191.4847383355,
+          "vs EDA": "held",
+          "vs same-days prediction": "held",
+          "realised / EDA": 1.0898367687
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "W": 4,
+          "days": 242,
+          "days windows differ": 212,
+          "realised": 228.4554186207,
+          "ci_low": -103.7060683191,
+          "ci_high": 425.1816633531,
+          "predicted": 194.4098928136,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.15,
+          "avg intensity, marginal windows": 299.7123558377,
+          "avg intensity, average windows": 297.9084159531,
+          "meets rule": false,
+          "EDA predicted": 181.2849480957,
+          "vs EDA": "held",
+          "vs same-days prediction": "held",
+          "realised / EDA": 1.2602007007
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "W": 4,
+          "days": 242,
+          "days windows differ": 211,
+          "realised": 3.2478007155,
+          "ci_low": -45.8069519107,
+          "ci_high": 29.1465607584,
+          "predicted": 88.5097664604,
+          "min_stratum_n": 22,
+          "dropped_replicates_pct": 5.55,
+          "avg intensity, marginal windows": 96.6357918809,
+          "avg intensity, average windows": 79.7211519568,
+          "meets rule": false,
+          "EDA predicted": 77.610110778,
+          "vs EDA": "overstated",
+          "vs same-days prediction": "overstated",
+          "realised / EDA": 0.0418476495
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "W": 4,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 2.4022746008,
+          "ci_low": -49.9312395795,
+          "ci_high": 32.3497542735,
+          "predicted": 95.33337208,
+          "min_stratum_n": 22,
+          "dropped_replicates_pct": 4.9,
+          "avg intensity, marginal windows": 93.8461170489,
+          "avg intensity, average windows": 76.6450416215,
+          "meets rule": false,
+          "EDA predicted": 81.5112186266,
+          "vs EDA": "overstated",
+          "vs same-days prediction": "overstated",
+          "realised / EDA": 0.0294717051
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "W": 4,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 318.9235960588,
+          "ci_low": 149.1927904304,
+          "ci_high": 474.7237709785,
+          "predicted": 228.0637880308,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.65,
+          "avg intensity, marginal windows": 438.7834182988,
+          "avg intensity, average windows": 441.1260995087,
+          "meets rule": true,
+          "EDA predicted": 213.4423831238,
+          "vs EDA": "held",
+          "vs same-days prediction": "held",
+          "realised / EDA": 1.4941905698
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "W": 4,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 373.5158284486,
+          "ci_low": 169.7039945106,
+          "ci_high": 551.9119307284,
+          "predicted": 225.6637907027,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.8,
+          "avg intensity, marginal windows": 425.8155310657,
+          "avg intensity, average windows": 427.3559999084,
+          "meets rule": true,
+          "EDA predicted": 211.575371668,
+          "vs EDA": "held",
+          "vs same-days prediction": "held",
+          "realised / EDA": 1.765403154
+        }
+      ],
+      "sensitivity": [
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "W": 2,
+          "days": 242,
+          "days windows differ": 212,
+          "realised": 387.9143019776,
+          "ci_low": -80.7946312955,
+          "ci_high": 664.0216257161,
+          "predicted": 370.793715991,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 3.95
+        },
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "W": 6,
+          "days": 242,
+          "days windows differ": 212,
+          "realised": 168.9656857652,
+          "ci_low": -76.3778615566,
+          "ci_high": 315.052777886,
+          "predicted": 144.4401948271,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 3.95
+        },
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "W": 8,
+          "days": 242,
+          "days windows differ": 182,
+          "realised": 75.1397394019,
+          "ci_low": -45.439565965,
+          "ci_high": 199.6209850654,
+          "predicted": 105.2524927101,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 3.4
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "W": 2,
+          "days": 242,
+          "days windows differ": 212,
+          "realised": 415.6197394083,
+          "ci_low": -18.9350572374,
+          "ci_high": 642.7211655235,
+          "predicted": 357.0954164122,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.15
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "W": 6,
+          "days": 242,
+          "days windows differ": 212,
+          "realised": 168.7863349743,
+          "ci_low": -87.7472049338,
+          "ci_high": 300.0185935393,
+          "predicted": 136.5358713574,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.15
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "W": 8,
+          "days": 242,
+          "days windows differ": 182,
+          "realised": 85.9110000074,
+          "ci_low": -34.7067576504,
+          "ci_high": 192.4924576515,
+          "predicted": 102.6506973447,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.0
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "W": 2,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 6.0693339318,
+          "ci_low": -64.5987728079,
+          "ci_high": 56.4378140315,
+          "predicted": 159.0513458635,
+          "min_stratum_n": 18,
+          "dropped_replicates_pct": 6.0
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "W": 6,
+          "days": 242,
+          "days windows differ": 211,
+          "realised": 5.7369252145,
+          "ci_low": -13.6140521718,
+          "ci_high": 23.5426460492,
+          "predicted": 68.6910758579,
+          "min_stratum_n": 22,
+          "dropped_replicates_pct": 5.65
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "W": 8,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": -14.6310245064,
+          "ci_low": -42.7784458631,
+          "ci_high": 6.3390213802,
+          "predicted": 59.0412497401,
+          "min_stratum_n": 22,
+          "dropped_replicates_pct": 6.0
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "W": 2,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 7.3410693547,
+          "ci_low": -64.0625247824,
+          "ci_high": 56.9116465888,
+          "predicted": 159.2392423839,
+          "min_stratum_n": 18,
+          "dropped_replicates_pct": 4.9
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "W": 6,
+          "days": 242,
+          "days windows differ": 211,
+          "realised": 6.3264256105,
+          "ci_low": -12.976545404,
+          "ci_high": 24.5559130425,
+          "predicted": 62.9078675005,
+          "min_stratum_n": 22,
+          "dropped_replicates_pct": 4.55
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "W": 8,
+          "days": 242,
+          "days windows differ": 211,
+          "realised": -14.1977006409,
+          "ci_low": -42.2084114709,
+          "ci_high": 4.8160809567,
+          "predicted": 59.0264635837,
+          "min_stratum_n": 22,
+          "dropped_replicates_pct": 4.55
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "W": 2,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 336.8956355938,
+          "ci_low": 94.1689694848,
+          "ci_high": 547.3308319509,
+          "predicted": 272.2512919834,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 5.65
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "W": 6,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 184.8786962496,
+          "ci_low": 43.2502212894,
+          "ci_high": 356.7838965801,
+          "predicted": 175.140829325,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.85
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "W": 8,
+          "days": 242,
+          "days windows differ": 214,
+          "realised": 141.8133322499,
+          "ci_low": 58.1621518223,
+          "ci_high": 236.2691280273,
+          "predicted": 153.7051024123,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.1
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "W": 2,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 272.2506760323,
+          "ci_low": 2.4222547618,
+          "ci_high": 494.1508296278,
+          "predicted": 272.3569673503,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.8
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "W": 6,
+          "days": 242,
+          "days windows differ": 242,
+          "realised": 236.127559537,
+          "ci_low": 77.3731419123,
+          "ci_high": 381.3281325617,
+          "predicted": 174.6750525574,
+          "min_stratum_n": 28,
+          "dropped_replicates_pct": 4.8
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "W": 8,
+          "days": 242,
+          "days windows differ": 214,
+          "realised": 187.7777407525,
+          "ci_low": 88.3560182969,
+          "ci_high": 297.122892041,
+          "predicted": 156.4365142638,
+          "min_stratum_n": 30,
+          "dropped_replicates_pct": 3.05
+        }
+      ],
+      "predictive": [
+        {
+          "BA": "ERCO",
+          "source": "eia",
+          "n": 5831,
+          "r2_marginal": -0.1292040344,
+          "calib_marginal": 0.4121024364,
+          "r2_average": -0.0674510116,
+          "calib_average": 0.3982485145
+        },
+        {
+          "BA": "ERCO",
+          "source": "derived",
+          "n": 5831,
+          "r2_marginal": -0.1415746691,
+          "calib_marginal": 0.4055261434,
+          "r2_average": -0.071704778,
+          "calib_average": 0.3928047908
+        },
+        {
+          "BA": "CISO",
+          "source": "eia",
+          "n": 5374,
+          "r2_marginal": -1.0617999907,
+          "calib_marginal": 0.0763899212,
+          "r2_average": -0.7725889698,
+          "calib_average": 0.0283922471
+        },
+        {
+          "BA": "CISO",
+          "source": "derived",
+          "n": 5410,
+          "r2_marginal": -1.3287695056,
+          "calib_marginal": 0.0579464062,
+          "r2_average": -0.9362417892,
+          "calib_average": 0.0024885193
+        },
+        {
+          "BA": "MISO",
+          "source": "eia",
+          "n": 5814,
+          "r2_marginal": 0.4091052541,
+          "calib_marginal": 0.7463009313,
+          "r2_average": 0.4872014483,
+          "calib_average": 0.9589213116
+        },
+        {
+          "BA": "MISO",
+          "source": "derived",
+          "n": 5831,
+          "r2_marginal": 0.3948803445,
+          "calib_marginal": 0.7444481692,
+          "r2_average": 0.4706288405,
+          "calib_average": 0.9547042843
+        }
+      ],
+      "miso_overnight": [
+        {
+          "source": "eia",
+          "MEF": 605.5703173891,
+          "CI low": 535.3296433021,
+          "CI high": 678.880261948,
+          "average": 443.5144029113,
+          "n": 1209
+        },
+        {
+          "source": "derived",
+          "MEF": 716.5304861639,
+          "CI low": 576.4683671143,
+          "CI high": 891.9668609227,
+          "average": 429.7706627728,
+          "n": 1214
+        }
+      ],
+      "gas_as_other_days": [
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-05-14T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-05-15T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-05-16T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-05-17T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-05-29T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-05-30T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-05-31T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-06-06T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-06-07T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-06-19T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-06-20T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-06-26T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-06-27T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-06-28T00:00:00.000"
+        },
+        {
+          "ba_code": "CISO",
+          "local_date": "2026-06-29T00:00:00.000"
+        }
+      ]
+    }
+  },
+  "no_gas_rule_sensitivity": {
+    "holdout_2026ytd": [
+      {
+        "BA": "ERCO",
+        "source": "eia",
+        "W": 4,
+        "days": 242,
+        "days windows differ": 212,
+        "realised": 208.6871084924,
+        "ci_low": -111.3436839497,
+        "ci_high": 440.8382786344,
+        "predicted": 203.9375012565,
+        "min_stratum_n": 28,
+        "dropped_replicates_pct": 3.95,
+        "avg intensity, marginal windows": 316.5214867135,
+        "avg intensity, average windows": 314.9705181981
+      },
+      {
+        "BA": "ERCO",
+        "source": "derived",
+        "W": 4,
+        "days": 242,
+        "days windows differ": 212,
+        "realised": 228.4554186207,
+        "ci_low": -103.7060683191,
+        "ci_high": 425.1816633531,
+        "predicted": 194.4098928136,
+        "min_stratum_n": 28,
+        "dropped_replicates_pct": 4.15,
+        "avg intensity, marginal windows": 299.7123558377,
+        "avg intensity, average windows": 297.9084159531
+      },
+      {
+        "BA": "CISO",
+        "source": "eia",
+        "W": 4,
+        "days": 242,
+        "days windows differ": 211,
+        "realised": 11.1765270571,
+        "ci_low": -14.3613512632,
+        "ci_high": 35.8026952869,
+        "predicted": 88.5097664604,
+        "min_stratum_n": 28,
+        "dropped_replicates_pct": 4.4,
+        "avg intensity, marginal windows": 92.8654062613,
+        "avg intensity, average windows": 76.7982480352
+      },
+      {
+        "BA": "CISO",
+        "source": "derived",
+        "W": 4,
+        "days": 242,
+        "days windows differ": 242,
+        "realised": 9.8142978114,
+        "ci_low": -15.2240187458,
+        "ci_high": 41.6474351656,
+        "predicted": 95.33337208,
+        "min_stratum_n": 28,
+        "dropped_replicates_pct": 3.9,
+        "avg intensity, marginal windows": 90.0122260946,
+        "avg intensity, average windows": 73.6458523241
+      },
+      {
+        "BA": "MISO",
+        "source": "eia",
+        "W": 4,
+        "days": 242,
+        "days windows differ": 242,
+        "realised": 318.9235960588,
+        "ci_low": 149.1927904304,
+        "ci_high": 474.7237709785,
+        "predicted": 228.0637880308,
+        "min_stratum_n": 28,
+        "dropped_replicates_pct": 5.65,
+        "avg intensity, marginal windows": 438.7834182988,
+        "avg intensity, average windows": 441.1260995087
+      },
+      {
+        "BA": "MISO",
+        "source": "derived",
+        "W": 4,
+        "days": 242,
+        "days windows differ": 242,
+        "realised": 373.5158284486,
+        "ci_low": 169.7039945106,
+        "ci_high": 551.9119307284,
+        "predicted": 225.6637907027,
+        "min_stratum_n": 28,
+        "dropped_replicates_pct": 4.8,
+        "avg intensity, marginal windows": 425.8155310657,
+        "avg intensity, average windows": 427.3559999084
+      }
+    ]
+  }
+}
