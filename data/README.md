@@ -13,8 +13,9 @@ Access date for every source below: **2026-09-27**.
 - Reference tables (BA time zones, energy-source codes, dates new sources
   begin): <https://www.eia.gov/electricity/930-content/EIA930_Reference_Tables.xlsx>
   - Time zones used for local-time derivation: ERCO Central, CISO Pacific,
-    MISO **Eastern** (EIA's reporting zone, although MISO's footprint is
-    largely Central).
+    MISO **Central**. EIA reports MISO on Eastern, but most MISO load is in
+    Central time and local hour is meant to capture diurnal load and solar
+    patterns. MISO spans two zones, so any single choice is an approximation.
   - Storage categories (BAT, SNB, WNB, PS, OES, UES) appear partway through
     the sample: ERCO from 2024-10-23, MISO from 2025-01-15; CISO not yet.
 - Public domain (U.S. government work).

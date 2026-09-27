@@ -98,8 +98,9 @@ BAS: dict[str, BA] = {
     "MISO": BA(
         "MISO",
         "Midcontinent Independent System Operator",
-        # Physically spans Central and Eastern; EIA-930 reference tables list MISO as Eastern.
-        "America/New_York",
+        # Spans Central and Eastern. EIA reports MISO on Eastern, but most of its load is
+        # Central, and local_hour exists to capture load/solar diurnal patterns, so Central.
+        "America/Chicago",
         "MIDW",
         (
             City("Minneapolis", 44.98, -93.27),
