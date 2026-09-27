@@ -41,11 +41,18 @@ def test_nonpositive_demand_nulled_then_filled():
     assert _counts(log) == {"nonpositive_nulled": 1, "interpolated": 1}
 
 
-def test_negative_thermal_nulled_but_solar_negative_kept():
-    s, raw = _series([5, -3, 5])
+def test_thermal_negative_nulled_only_beyond_station_service_tolerance():
+    s, raw = _series([5, -3, 5, -300, 5])
+    limit = pd.Series(10.0, index=s.index)  # e.g. 1% of a 1,000 MWh hour
     log = QualityLog()
-    out, _ = clean_series(s, raw, name="NG", ba="T", table="t", log=log, no_negative=True)
-    assert out.iloc[1] == 5
+    out, flag = clean_series(s, raw, name="COL", ba="T", table="t", log=log, neg_limit=limit)
+    assert out.iloc[1] == -3 and flag.iloc[1] == "ok"
+    assert out.iloc[3] == 5 and flag.iloc[3] == "interpolated"
+    assert _counts(log) == {"negative_nulled": 1, "negative_kept": 1, "interpolated": 1}
+
+
+def test_solar_negative_kept():
+    s, raw = _series([5, -3, 5])
     log2 = QualityLog()
     out2, flag2 = clean_series(s, raw, name="SUN", ba="T", table="t", log=log2)
     assert out2.iloc[1] == -3 and flag2.iloc[1] == "ok"

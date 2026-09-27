@@ -81,10 +81,10 @@ def _sections(conn: psycopg.Connection, split) -> list[str]:
         SELECT ba_code AS "BA", EXTRACT(YEAR FROM ts_utc - INTERVAL '1 hour')::int::text AS "year",
                ROUND((100 * PERCENTILE_CONT(0.5) WITHIN GROUP (
                    ORDER BY ABS(fuel_sum_mwh - net_generation_mwh) / net_generation_mwh))::numeric, 3)::float
-                   AS "median |Σfuel − NG| %%",
+                   AS "median abs(Σfuel − NG) %%",
                ROUND((100 * PERCENTILE_CONT(0.95) WITHIN GROUP (
                    ORDER BY ABS(fuel_sum_mwh - net_generation_mwh) / net_generation_mwh))::numeric, 3)::float
-                   AS "p95 |Σfuel − NG| %%"
+                   AS "p95 abs(Σfuel − NG) %%"
         FROM v_hour
         WHERE split_name = %(split)s AND net_generation_mwh > 0 AND fuel_sum_mwh IS NOT NULL
         GROUP BY 1, 2 ORDER BY 1, 2""", p)
@@ -110,6 +110,32 @@ def _sections(conn: psycopg.Connection, split) -> list[str]:
         _md(emis, "{:,.4f}"),
     ]
     out += ["### EIA API vs. Grid Monitor workbook", _md(_api_vs_workbook(split), "{:,.3f}")]
+
+    gaps = _q(conn, """
+        WITH m AS (
+            SELECT ba_code, 'generation_by_fuel' AS tbl, fuel_code AS col, ts_utc
+            FROM generation_by_fuel WHERE flag = 'missing'
+            UNION ALL
+            SELECT ba_code, 'grid_hour', 'demand_mwh', ts_utc
+            FROM grid_hour WHERE demand_mwh IS NULL
+        ), runs AS (
+            SELECT *, ts_utc - ROW_NUMBER() OVER (PARTITION BY ba_code, tbl, col ORDER BY ts_utc)
+                          * INTERVAL '1 hour' AS grp
+            FROM m WHERE ts_utc > %(start)s AND ts_utc <= %(end)s
+        )
+        SELECT ba_code AS "BA", tbl AS "table", col AS "column",
+               MIN(ts_utc) - INTERVAL '1 hour' AS "gap start (UTC)",
+               MAX(ts_utc) AS "gap end (UTC)", COUNT(*)::int AS "hours"
+        FROM runs GROUP BY ba_code, tbl, col, grp
+        HAVING COUNT(*) >= 24
+        ORDER BY 1, 4, 3""", p)
+    out += [
+        "### Reporting gaps of 24 hours or more",
+        "Left NULL, never filled. Where a fuel is absent, EIA's net generation for those "
+        "hours generally omits it too, so fuel totals still reconcile but net generation "
+        "is understated.",
+        _md(gaps) if len(gaps) else "_None._",
+    ]
     return out
 
 

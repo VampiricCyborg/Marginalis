@@ -48,15 +48,6 @@ GENERATION_BY_FUEL = DataFrameSchema(
         "flag": _flag,
         "is_imputed": Column(bool),
     },
-    checks=[
-        # Fuels that cannot consume power must never be negative after cleaning.
-        Check(
-            lambda df: ~(df["fuel_code"].isin(["COL", "NG", "OIL", "NUC"])
-                         & (df["generation_mwh"] < 0)),
-            element_wise=False,
-            name="no_negative_thermal",
-        )
-    ],
     unique=["ba_code", "ts_utc", "fuel_code"],
     strict=True,
 )

@@ -75,6 +75,11 @@ generation, which is why a national rate is used.
 - **Non-emitting:** NUC, WAT, SUN, WND, GEO and all storage categories.
   Storage discharge carries the emissions of the charging energy, which this
   method does not track.
+- **Negative thermal generation contributes zero CO₂.** Small negative COL/OIL/NUC
+  values (e.g. CISO coal at −1 to −9 MWh) are station-service load at idle units:
+  they are kept as reported, but a unit drawing power burns no fuel. Negatives
+  larger than 1% of the BA's net generation that hour are treated as errors and
+  nulled.
 - **OTH and UNK are not assigned a rate** (treated as 0 in the derived series,
   flagged). EIA's "Other" mixes biomass, waste and miscellaneous sources with
   no single defensible rate.

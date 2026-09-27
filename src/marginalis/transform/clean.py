@@ -6,8 +6,10 @@ Rules run in this order for each hourly series, and every value they touch is co
    duplicate_conflict  duplicates that disagree: value nulled
 2. unparseable         non-numeric value from the source: nulled
 3. nonpositive_nulled  demand or net generation <= 0
-   negative_nulled     negative generation from a fuel that cannot consume power
-                       (COL, NG, OIL, NUC)
+   negative_nulled     negative COL/NG/OIL/NUC generation larger in magnitude than
+                       THERMAL_NEG_TOLERANCE of the BA's net generation that hour.
+                       Smaller negatives are station-service load at idle units
+                       (e.g. CISO coal, a 2020 CISO nuclear outage) and are kept.
 4. outlier_nulled      demand or net generation more than OUTLIER_RATIO away from the
                        centred rolling median over OUTLIER_WINDOW hours
 5. interpolated        gaps of <= MAX_INTERP_GAP hours between two valid values:
@@ -30,7 +32,8 @@ import pandas as pd
 MAX_INTERP_GAP = 2
 OUTLIER_WINDOW = 24
 OUTLIER_RATIO = 0.5
-NO_NEGATIVE_FUELS = frozenset({"COL", "NG", "OIL", "NUC"})
+THERMAL_FUELS = frozenset({"COL", "NG", "OIL", "NUC"})
+THERMAL_NEG_TOLERANCE = 0.01
 POSITIVE_SERIES = frozenset({"demand_mwh", "net_generation_mwh"})
 
 
@@ -89,7 +92,7 @@ def clean_series(
     table: str,
     log: QualityLog,
     positive: bool = False,
-    no_negative: bool = False,
+    neg_limit: pd.Series | None = None,
     outliers: bool = False,
     signed: bool = False,
 ) -> tuple[pd.Series, pd.Series]:
@@ -111,9 +114,9 @@ def clean_series(
     flag[bad] = "unparseable"
     if positive:
         null(s <= 0, "nonpositive_nulled")
-    if no_negative:
-        null(s < 0, "negative_nulled")
-    elif not (positive or signed):
+    if neg_limit is not None:
+        null(s < -neg_limit.reindex(s.index).abs().fillna(0), "negative_nulled")
+    if not (positive or signed):
         neg = s < 0
         log.add(ba, table, name, "negative_kept", s.index[neg])
     if outliers:

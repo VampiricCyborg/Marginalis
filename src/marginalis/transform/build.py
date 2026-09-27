@@ -14,7 +14,8 @@ from marginalis.emission_factors import FACTOR_SOURCE, fuel_factors
 from marginalis.ingestion import grid_monitor_xlsx
 from marginalis.transform import schemas, tidy
 from marginalis.transform.clean import (
-    NO_NEGATIVE_FUELS,
+    THERMAL_FUELS,
+    THERMAL_NEG_TOLERANCE,
     POSITIVE_SERIES,
     QualityLog,
     clean_series,
@@ -72,7 +73,7 @@ def _grid(ba: str, idx: pd.DatetimeIndex, qlog: QualityLog) -> pd.DataFrame:
     return out
 
 
-def _fuel(ba: str, idx: pd.DatetimeIndex, qlog: QualityLog) -> pd.DataFrame:
+def _fuel(ba: str, idx: pd.DatetimeIndex, qlog: QualityLog, net_gen: pd.Series) -> pd.DataFrame:
     fu = tidy.fuel(ba)
     fu = fu[fu["ts_utc"].isin(idx)]
     unknown = set(fu["fuel_code"]) - set(FUELS)
@@ -86,7 +87,8 @@ def _fuel(ba: str, idx: pd.DatetimeIndex, qlog: QualityLog) -> pd.DataFrame:
         part = part.set_index("ts_utc").reindex(span)
         values, flag = clean_series(
             part["value"], part["value_raw"], name=code, ba=ba, table="generation_by_fuel",
-            log=qlog, no_negative=code in NO_NEGATIVE_FUELS,
+            log=qlog,
+            neg_limit=THERMAL_NEG_TOLERANCE * net_gen if code in THERMAL_FUELS else None,
         )
         frames.append(
             pd.DataFrame({"ba_code": ba, "ts_utc": span, "fuel_code": code,
@@ -117,7 +119,8 @@ def _emissions(ba: str, idx: pd.DatetimeIndex, gen: pd.DataFrame) -> pd.DataFram
         index=idx,
     )
     complete = (wide.notna() | ~expected).all(axis=1)
-    co2 = sum(wide[f].fillna(0) * rates[f] for f in wide.columns)
+    # Negative net generation (station service at idle units) burns no fuel: zero CO2.
+    co2 = sum(wide[f].fillna(0).clip(lower=0) * rates[f] for f in wide.columns)
     out = pd.DataFrame(
         {"ba_code": ba, "ts_utc": idx,
          "co2_kg_derived": co2.where(complete).to_numpy(),
@@ -141,7 +144,8 @@ def build_ba(ba: str) -> BuiltBA:
     idx = hourly_index(pd.Timestamp(DATA_START), pd.Timestamp(DATA_END))
     qlog = QualityLog()
     grid = schemas.GRID_HOUR.validate(_grid(ba, idx, qlog))
-    gen = schemas.GENERATION_BY_FUEL.validate(_fuel(ba, idx, qlog))
+    net_gen = grid.set_index("ts_utc")["net_generation_mwh"]
+    gen = schemas.GENERATION_BY_FUEL.validate(_fuel(ba, idx, qlog, net_gen))
     ic = schemas.INTERCHANGE_BY_PAIR.validate(_interchange(ba, idx, qlog))
     em = schemas.HOURLY_EMISSIONS.validate(_emissions(ba, idx, gen))
     return BuiltBA(grid, gen, ic, em, qlog.frame())
