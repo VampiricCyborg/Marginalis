@@ -78,6 +78,47 @@ counts per cell (min 141, median ≈165) had been looked at.
 
 W = 2, 6 and 8 hours are reported as sensitivity analyses only.
 
+### Evaluation details
+
+Recorded 2026-09-27, after `mef_profile` was estimated and **before any
+hold-out row was read**.
+
+- **Schedulers.** Both use `mef_profile` (demand spec) unchanged. For every
+  hold-out hour, the marginal scheduler's factor is `mef_kg_per_mwh`, and the
+  average scheduler's is `avg_intensity_kg_per_mwh`, for that hour's month and
+  local hour. Each scheduler's daily window comes from
+  `marginalis.schedule.best_window_per_day` (W hours, inside the local
+  calendar day, earliest start wins ties). Days where either scheduler has no
+  valid window are dropped.
+- **Realised outcome.** Marginal CO₂ from load that was not actually added
+  cannot be observed, so it is estimated from the hold-out data. For each
+  hold-out period, per BA × source, fit the hold-out slope β̂ᴴ in each month ×
+  local-hour stratum, using the same OLS-with-intercept and the same frozen
+  exclusions (including the gas-as-Other rule, applied to hold-out days).
+  Then compute
+  `G = mean over days d of [ mean_{h ∈ A_d} β̂ᴴ − mean_{h ∈ M_d} β̂ᴴ ]`,
+  where A_d and M_d are the average and marginal scheduler's windows on day d.
+  G is the realised kg CO₂ avoided per MWh shifted from the average-optimal
+  to the marginal-optimal window.
+- **Predicted counterpart.** The same formula with the training β (from
+  `mef_profile`) over the same days and windows. Predicted and realised gaps
+  are therefore computed on identical days.
+- **CI.** Cluster bootstrap over hold-out local calendar weeks, 2,000
+  replicates, fixed seed, re-estimating every β̂ᴴ in each replicate;
+  percentile 95%.
+- **Decision.** Applied per BA × source to the realised G. The average-based
+  scheduler is declared materially worse in a BA if the rule holds for **both**
+  emissions sources in Hold-out 1. Hold-out 2 is reported as a second check.
+- **Predictive check.** Per BA × source, the prediction for each hold-out hour
+  is β_train(stratum) × Δdemand. Report the out-of-sample R² against realised
+  ΔCO₂ and the calibration slope (realised ΔCO₂ regressed on the prediction,
+  with intercept). The benchmark is the same prediction using
+  `avg_intensity_kg_per_mwh` in place of β.
+- **Named follow-up.** The EDA recommendation (MISO overnight, local hours
+  00–05) is re-estimated on each hold-out period with the same
+  within-stratum pooled estimator, and compared to its train values (732 vs
+  459 kg/MWh).
+
 ## Decision threshold
 
 The average-based scheduler is **"materially worse"** if the marginal-based
@@ -99,4 +140,8 @@ confidence interval of that difference excludes zero.
   the day boundaries produce spurious ±25 GW fossil deltas. The rule
   deliberately does not trigger on CISO, whose "Other" carries battery
   storage (charging and discharging) and legitimately exceeds gas on some
-  2024 spring evenings. CISO's gas share never falls below 8%.
+  2024 spring evenings. CISO's gas share never falls below 8%. The rule is
+  a detector, not a date list: it applies to every BA and to hold-out data.
+- **2026-09-27 (before the freeze and before any hold-out read)** — Added
+  "Evaluation details", which defines how realised outcomes, CIs and the
+  predictive check are computed. Decision threshold unchanged.
