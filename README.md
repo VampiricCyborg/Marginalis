@@ -1,15 +1,54 @@
 # Marginalis
 
-*When you run flexible load matters. The obvious answer is often wrong.*
+*In MISO, scheduling flexible load by average intensity instead of marginal cost about 230 kg CO₂ per MWh shifted (95% CI 44 to 420) on held-out data. In ERCOT and CAISO the effect didn't survive the hold-out test.*
 
 Most "run it when the grid is green" advice uses **average** carbon intensity.
 The quantity that matters for a scheduling decision is the **marginal**
 emissions factor: how much CO₂ changes when one more MWh of load is added.
 Marginalis estimates marginal emissions factors from public EIA-930 hourly data
 for three US balancing authorities (ERCOT, CAISO, MISO), 2019-07 → 2026-08,
-and measures how often scheduling by average intensity picks a worse hour.
+and tests, on held-out data, how much CO₂ it costs to schedule a flexible load by
+average intensity instead.
 
 **Live:** <https://marginalis-5xm3.onrender.com> (read-only; free tier, so the first request after idle can take ~1 minute to wake).
+
+## Results
+
+Method, decision rule and data split were pre-registered in
+[`docs/preregistration.md`](docs/preregistration.md) and frozen before any hold-out data was
+read. The test: schedule a 4-hour flexible load in the marginal-optimal window instead of the
+average-optimal one, and estimate what that shift avoids on data the model never saw. It counts
+as confirmed if the gap is ≥ 50 kg CO₂/MWh shifted **and** the 95% CI excludes zero, for both
+emissions sources.
+
+| Region | 2025 hold-out gap (kg CO₂ / MWh shifted) | 2026 YTD check | EDA prediction | Verdict |
+|---|---|---|---|---|
+| **MISO** | **230** (95% CI 44 to 420) | 319 (149 to 475) | 213 | **Confirmed**; held again in 2026 |
+| ERCOT | 157 (95% CI −51 to 277) | 209 (−111 to 441) | 191 | Not confirmed: CI includes zero |
+| CAISO | 21 (95% CI −2 to 55) | 3 (−46 to 29) | 78 | Not confirmed: the in-sample estimate shrank to near zero |
+
+**One region out of three.** The EDA's in-sample prediction held for MISO, was not
+distinguishable from zero for ERCOT, and overstated CAISO by about 56 kg/MWh.
+
+**MISO overnight.** Average intensity makes overnight MISO look like the cleanest time to run
+load. At the margin it isn't: in the 2025 hold-out, overnight hours (00:00–05:00) had a
+marginal factor of **632 kg/MWh (95% CI 555 to 710)** against an average of **452**. The
+direction held from training (732 vs 459), but the gap shrank.
+
+![Marginal vs average CO₂ intensity by local hour, four months, three regions](reports/figures/05_mef_vs_avg_eia.png)
+
+*Marginal (blue, 95% CI band) vs average (orange) CO₂ intensity by local hour, estimated on
+2019–2024 training data (EIA emissions, demand spec).*
+
+**What the marginal factors are, and aren't, good for.** In an out-of-sample check on hourly
+ΔCO₂ in 2025, average intensity predicted single hours *better* than the marginal factors in
+CAISO (R² 0.21 vs 0.15) and MISO (0.61 vs 0.59). The marginal factors only did better in ERCOT
+(0.10 vs 0.07). Their calibration slopes are 0.59–0.84, where 1 is calibrated, so the hourly
+estimates are too extreme. The factors are useful for **ranking windows**, which is what the
+scheduling test uses. They are **not** good for predicting the CO₂ of an individual hour.
+
+Full results: [`reports/holdout_results.md`](reports/holdout_results.md). EDA and
+estimation: [`reports/eda_findings.md`](reports/eda_findings.md).
 
 ## Methodology
 
