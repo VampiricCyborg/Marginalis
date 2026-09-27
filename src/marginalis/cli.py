@@ -6,7 +6,10 @@ import argparse
 import logging
 from datetime import datetime, timezone
 
-from marginalis.config import BAS, DATA_END, DATA_START
+from marginalis.config import BAS, DATA_END, DATA_START, is_production
+
+# Commands that write data, tables or reports. Never run against production.
+MUTATING = {"ingest", "build", "report", "analyze", "evaluate"}
 
 
 def _date(s: str) -> datetime:
@@ -96,6 +99,9 @@ def main(argv: list[str] | None = None) -> None:
     ak.set_defaults(func=cmd_ask)
 
     args = parser.parse_args(argv)
+    if is_production() and args.command in MUTATING:
+        parser.exit(2, f"marginalis {args.command} is disabled in production: the deployed database is a "
+                       "read-only copy of frozen results.\n")
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",

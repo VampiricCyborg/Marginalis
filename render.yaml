@@ -1,0 +1,19 @@
+# Render blueprint: one Docker web service serving the read-only API and the frontend.
+# Secrets are set in the Render dashboard (sync: false), never committed.
+services:
+  - type: web
+    name: marginalis
+    runtime: docker
+    plan: free
+    region: ohio            # same AWS region as the Neon project (aws-us-east-2)
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: MARGINALIS_ENV
+        value: production
+      - key: ASK_RATE_PER_MINUTE
+        value: "5"
+      - key: DATABASE_URL     # Neon *pooled* URL for the read-only marginalis_app role
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false

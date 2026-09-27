@@ -1,5 +1,6 @@
 """Project-wide constants. The train/hold-out split lives here and nowhere else."""
 
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -37,6 +38,11 @@ SPLITS = (TRAIN, HOLDOUT, HOLDOUT_YTD)
 
 # Flip to True only once the method is frozen (see docs/preregistration.md).
 METHOD_FROZEN = True
+
+
+def is_production() -> bool:
+    """Deployed, read-only serving (set MARGINALIS_ENV=production on Render)."""
+    return os.environ.get("MARGINALIS_ENV", "").lower() == "production"
 
 
 class HeldOutDataError(RuntimeError):

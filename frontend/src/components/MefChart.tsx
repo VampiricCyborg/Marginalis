@@ -33,8 +33,9 @@ export function MefChart({ rows }: { rows: MefRow[] }) {
           label={{ value: 'kg CO₂/MWh', angle: -90, position: 'insideLeft', fill: 'var(--muted)', fontSize: 11 }} />
         <ReferenceLine y={0} stroke="var(--axis)" />
         <Tooltip content={<Tip />} />
-        <Legend wrapperStyle={{ fontSize: 12, color: 'var(--ink-2)' }} />
-        <Area dataKey="ci" name="Marginal 95% CI" fill="var(--marginal-soft)" stroke="none" isAnimationActive={false} />
+        <Legend wrapperStyle={{ fontSize: 12 }}
+          formatter={(value) => <span style={{ color: 'var(--ink-2)' }}>{value}</span>} />
+        <Area dataKey="ci" name="Marginal 95% CI" fill="var(--marginal-soft)" stroke="none" legendType="square" isAnimationActive={false} />
         <Line dataKey="mef" name="Marginal" stroke="var(--marginal)" strokeWidth={2} dot={false} isAnimationActive={false} />
         <Line dataKey="avg" name="Average" stroke="var(--average)" strokeWidth={2} dot={false} isAnimationActive={false} />
       </ComposedChart>

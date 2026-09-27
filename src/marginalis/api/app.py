@@ -9,14 +9,15 @@ from contextlib import asynccontextmanager
 from datetime import date
 
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from marginalis import db
 from marginalis.api import evidence as ev
 from marginalis.api import service
-from marginalis.config import BAS, ROOT
+from marginalis.api.ratelimit import limit_ask
+from marginalis.config import BAS, ROOT, is_production
 
 STATE: dict = {}
 
@@ -27,8 +28,32 @@ def load_profile() -> pd.DataFrame:
         return pd.DataFrame(cur.fetchall(), columns=[d.name for d in cur.description])
 
 
+WRITABLE_SQL = """
+    SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+      AND (has_table_privilege(c.oid, 'INSERT') OR has_table_privilege(c.oid, 'UPDATE')
+        OR has_table_privilege(c.oid, 'DELETE') OR has_table_privilege(c.oid, 'TRUNCATE'))
+"""
+
+
+def assert_read_only() -> None:
+    """Production refuses to start unless its database role can only read.
+
+    The frozen artifacts (mef_profile, the views, the cleaned tables) can then not be
+    modified by anything the public app does, whatever the code path.
+    """
+    with db.connect() as conn:
+        writable = [r[0] for r in conn.execute(WRITABLE_SQL).fetchall()]
+        can_create = conn.execute("SELECT has_schema_privilege(current_user, 'public', 'CREATE')").fetchone()[0]
+    if writable or can_create:
+        raise RuntimeError(f"production DATABASE_URL role is not read-only (writable: {writable}, "
+                           f"create on public: {can_create}); refusing to start")
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    if is_production():
+        assert_read_only()
     STATE["profile"] = load_profile()
     ev.results()  # fail fast if the hold-out results file is missing
     yield
@@ -93,7 +118,7 @@ class AskRequest(BaseModel):
     question: str = Field(..., min_length=3, max_length=500)
 
 
-@app.post("/api/ask")
+@app.post("/api/ask", dependencies=[Depends(limit_ask)])
 def ask(req: AskRequest) -> dict:
     """Natural-language question, answered from mef_profile and the committed reports only."""
     from marginalis.ask import agent
