@@ -16,6 +16,8 @@ def _utc(y: int, m: int, d: int) -> datetime:
 
 
 # --- Time windows (UTC, half-open [start, end)) -------------------------------
+# Windows describe the time covered. EIA rows are stamped hour-ENDING, so a row
+# belongs to a window when start < ts_utc <= end.
 # EIA-930 fuel-type data begins mid-2019; the study runs through 2026-08.
 DATA_START = _utc(2019, 7, 1)
 DATA_END = _utc(2026, 9, 1)
@@ -96,7 +98,8 @@ BAS: dict[str, BA] = {
     "MISO": BA(
         "MISO",
         "Midcontinent Independent System Operator",
-        "America/Chicago",  # MISO spans two zones; verified against EIA-930 reference table at ingest.
+        # Physically spans Central and Eastern; EIA-930 reference tables list MISO as Eastern.
+        "America/New_York",
         "MIDW",
         (
             City("Minneapolis", 44.98, -93.27),
