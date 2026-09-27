@@ -55,3 +55,34 @@ uv run uvicorn marginalis.api.app:app   # API + frontend on http://localhost:800
 The frontend only displays what the API returns. Hold-out validation is shown on every
 chart and card: MISO is validated, and ERCOT and CAISO are marked "Not validated" wherever
 their numbers appear.
+
+## Deployment (Render + Neon)
+
+Production is a **read-only copy of the frozen results**. Nothing is ingested, rebuilt or
+re-estimated in production.
+
+1. **Database (Neon, AWS us-east-2).** Restore a dump of the frozen local database (not a
+   re-run of `ingest`/`build`), then create the read-only role and verify the copy:
+   ```bash
+   docker compose exec -T db pg_dump -U marginalis -d marginalis -Fc --no-owner --no-privileges > marginalis.dump
+   pg_restore --no-owner --no-privileges -d "$NEON_DIRECT_OWNER_URL" marginalis.dump
+   psql "$NEON_DIRECT_OWNER_URL" -v pw="'<strong password>'" -f db/deploy/readonly_role.sql
+   uv run python scripts/verify_db.py "$NEON_URL"   # must match the local fingerprint
+   ```
+   Use the direct (non-`-pooler`) host for the restore and the **pooled** host for the app.
+2. **App (Render).** New → Blueprint → this repository (`render.yaml`). Set the two secrets
+   in the dashboard:
+   - `DATABASE_URL`: the Neon **pooled** URL for the `marginalis_app` role.
+   - `GROQ_API_KEY`: for `/api/ask`.
+
+   The Docker image builds the frontend and serves it from FastAPI. `EIA_API_KEY` is not
+   needed in production.
+
+**Read-only guarantees, layered:**
+- The app's database role can only `SELECT`, and it is read-only at the role level.
+- With `MARGINALIS_ENV=production`, the app refuses to start if its role can write anything.
+- The mutating CLI commands (`ingest`, `build`, `report`, `analyze`, `evaluate`) exit in
+  production.
+- No HTTP route reaches them.
+
+`/api/ask` is limited to `ASK_RATE_PER_MINUTE` (default 5) requests per IP per minute.
