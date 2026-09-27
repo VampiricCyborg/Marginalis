@@ -1,0 +1,30 @@
+# secrets
+.env
+
+# private planning docs
+docs/private/
+
+# data (raw is immutable and rebuildable from the CLI)
+data/raw/
+data/processed/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# notebooks
+.ipynb_checkpoints/
+
+# frontend
+node_modules/
+dist/
+
+# os / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
