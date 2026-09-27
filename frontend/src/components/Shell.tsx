@@ -37,7 +37,7 @@ function Clocks({ className = '' }: { className?: string }) {
   const ct = useClock('America/Chicago'), pt = useClock('America/Los_Angeles')
   return (
     <div className={`font-mono text-[11px] uppercase tracking-wider ${className}`}>
-      <span className="mr-4"><span className="pulse-dot mr-2 text-good align-middle" />MISO · ERCOT {ct} CT</span>
+      <span className="mr-4"><span className="pulse-dot mr-2 text-muted align-middle" />MISO · ERCOT {ct} CT</span>
       <span>CAISO {pt} PT</span>
     </div>
   )
@@ -214,7 +214,7 @@ export function Preloader() {
               initial={{ pathLength: 0 }} animate={{ pathLength: n / 100 }} transition={{ ease: 'linear', duration: 0.1 }} />
           </svg>
           <div className="flex items-end justify-between">
-            <p className="max-w-xs text-sm text-ink-2">Loading marginal and average CO₂ profiles for three US grids…</p>
+            <p className="max-w-xs text-sm text-ink-2">Marginal vs average CO₂ for three US grids.</p>
             <span className="display tabular text-[22vw] sm:text-[14vw]">{n}</span>
           </div>
         </motion.div>

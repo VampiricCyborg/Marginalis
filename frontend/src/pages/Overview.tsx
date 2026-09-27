@@ -93,8 +93,9 @@ function StatBlock({ b, i }: { b: BAStatus; i: number }) {
         <StatusBadge validated={ok} size="sm" />
       </div>
       <div className={`mt-10 ${ok ? '' : 'opacity-80'}`}>
-        <div className="display text-7xl sm:text-8xl"><Counter value={e.value} /></div>
-        <p className="mt-2 text-sm text-ink-2">kg CO₂ avoided per MWh shifted · 2025 hold-out</p>
+        <div className={`display ${ok ? 'text-7xl sm:text-8xl' : 'text-5xl text-ink-2 sm:text-6xl'}`}><Counter value={e.value} /></div>
+        <p className="mt-2 text-sm text-ink-2">{ok ? 'kg CO₂ avoided per MWh shifted · 2025 hold-out'
+          : 'estimated gap, kg CO₂/MWh shifted · 2025 hold-out · not distinguishable from zero'}</p>
         {/* CI strip: where the interval sits relative to 0 and the 50 threshold */}
         <CiStrip lo={e.ci_low_95} hi={e.ci_high_95} v={e.value} ok={ok} />
         <p className="mt-2 text-xs text-ink-2 tabular">95% CI {fmt(e.ci_low_95)} to {fmt(e.ci_high_95)}{e.ci_low_95 <= 0 && ' — includes zero'}</p>
@@ -141,7 +142,7 @@ export default function Overview() {
       <section className="px-4 py-28 sm:px-8 sm:py-40">
         <p className="eyebrow mb-8">The idea</p>
         <ScrubWords className="max-w-6xl text-3xl font-medium leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl"
-          text="Average intensity tells you how clean the grid already is. The marginal factor tells you what happens when you add one more MWh — which plant ramps up to serve it. For a scheduling decision, only the second one counts." />
+          text="Average intensity tells you how clean the grid already is. The marginal factor tells you what happens when you add one more MWh — which generation ramps up to serve it. For a scheduling decision, only the second one counts." />
       </section>
 
       <section id="try" className="scroll-mt-20 px-4 pb-28 sm:px-8">
@@ -159,7 +160,7 @@ export default function Overview() {
             <h2 className="display text-6xl sm:text-8xl"><SplitLines lines={['One grid', 'passed.', <span className="text-ink-2">Two didn't.</span>]} /></h2>
           </div>
           <Reveal className="max-w-md text-lg text-ink-2 md:justify-self-end">
-            We froze the method, then scheduled a 4-hour load by marginal instead of average on 2025 data the model never saw. Here's what was actually avoided.
+            We froze the method, then scheduled a 4-hour load by marginal instead of average on 2025 data the model never saw. Here's what that shift would have avoided, estimated from the held-out data.
           </Reveal>
         </div>
         {error != null && <ErrorBox error={error} />}

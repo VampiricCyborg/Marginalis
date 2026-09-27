@@ -95,7 +95,7 @@ export default function Schedule() {
     load(f)
   }
   const PRESETS = [
-    { label: 'EV fleet charging', sub: '6 h · 40 MWh · overnight', p: { duration_h: '6', load_mwh: '40', earliest_hour: '', latest_hour: '' } },
+    { label: 'EV fleet charging', sub: '6 h · 40 MWh', p: { duration_h: '6', load_mwh: '40', earliest_hour: '', latest_hour: '' } },
     { label: 'Data-centre batch job', sub: '4 h · 100 MWh', p: { duration_h: '4', load_mwh: '100', earliest_hour: '', latest_hour: '' } },
     { label: 'Water pumping', sub: '8 h · 30 MWh', p: { duration_h: '8', load_mwh: '30', earliest_hour: '', latest_hour: '' } },
     { label: 'Office-hours only', sub: '3 h · 20 MWh · 08–18', p: { duration_h: '3', load_mwh: '20', earliest_hour: '8', latest_hour: '18' } },

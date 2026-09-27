@@ -6,7 +6,7 @@ const STEPS = [
   { k: 'Clean', t: 'Stored in UTC, local time derived in the database. Gaps, spikes and reporting breaks flagged in a data-quality report before any modelling.', icon: 'clean' },
   { k: 'Estimate', t: 'First-difference regression of ΔCO₂ on Δdemand within month × hour strata. Two emissions series checked against each other.', icon: 'estimate' },
   { k: 'Freeze', t: 'Train on 2019-07 → 2024-12. The method and the decision rule are pre-registered and frozen before any hold-out data is read.', icon: 'freeze' },
-  { k: 'Test', t: 'Schedule a 4-hour load by marginal vs by average on held-out 2025 data, then again on 2026 YTD. Count what was actually avoided.', icon: 'test' },
+  { k: 'Test', t: 'Schedule a 4-hour load by marginal vs by average on held-out 2025 data, then again on 2026 YTD. Estimate what that shift would have avoided, from data the model never saw.', icon: 'test' },
   { k: 'Serve', t: 'A read-only API serves the frozen results. The Ask interface can only quote them, with their confidence intervals and caveats attached by code.', icon: 'serve' },
 ]
 

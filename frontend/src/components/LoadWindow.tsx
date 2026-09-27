@@ -156,8 +156,14 @@ export function LoadWindow({ bas }: { bas: BAStatus[] }) {
               <path d={line('a')} fill="none" stroke="var(--average)" strokeWidth="2" strokeLinejoin="round" />
               <path d={line('m')} fill="none" stroke="var(--marginal)" strokeWidth="2" strokeLinejoin="round" />
               {/* direct labels at the right end */}
-              <text x={xc(23) - 4} y={y(rows[23].marginal.value) - 10} textAnchor="end" fontSize="12" fontWeight="600" fill="var(--ink)">Marginal</text>
-              <text x={xc(23) - 4} y={y(rows[23].average_intensity_kg_per_mwh) + 18} textAnchor="end" fontSize="12" fontWeight="600" fill="var(--ink)">Average</text>
+              {(() => {
+                const mv = rows[23].marginal.value, av = rows[23].average_intensity_kg_per_mwh
+                const mUp = mv >= av
+                return <>
+                  <text x={xc(23) - 4} y={y(mv) + (mUp ? -10 : 18)} textAnchor="end" fontSize="12" fontWeight="600" fill="var(--ink)">Marginal</text>
+                  <text x={xc(23) - 4} y={y(av) + (mUp ? 18 : -10)} textAnchor="end" fontSize="12" fontWeight="600" fill="var(--ink)">Average</text>
+                </>
+              })()}
               {/* hover crosshair */}
               {hv && (
                 <g pointerEvents="none">

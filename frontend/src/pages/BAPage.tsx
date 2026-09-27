@@ -52,7 +52,7 @@ function Stat({ label, e, sub, ok }: { label: string; e?: Estimate; sub?: string
     <div className={`border-t pt-4 ${ok ? 'border-ink' : 'border-dashed border-neutral'}`}>
       <div className="eyebrow">{label}</div>
       {e && <>
-        <div className="display mt-3 text-6xl sm:text-7xl"><Counter value={e.value} /></div>
+        <div className={`display mt-3 ${ok ? 'text-6xl sm:text-7xl' : 'text-4xl text-ink-2 sm:text-5xl'}`}><Counter value={e.value} /></div>
         <div className="mt-1 text-sm text-ink-2 tabular">95% CI {fmt(e.ci_low_95)} to {fmt(e.ci_high_95)}</div>
       </>}
       {sub && <div className="mt-1 text-sm text-ink-2">{sub}</div>}
@@ -104,13 +104,14 @@ export default function BAPage() {
           <h2 className="text-2xl font-semibold tracking-tight">Realised saving from marginal scheduling</h2>
           <StatusBadge validated={ok} size="sm" />
         </div>
-        <p className="text-sm text-ink-2">kg CO₂ avoided per MWh shifted, measured on held-out data the method never saw</p>
+        <p className="text-sm text-ink-2">{ok ? 'kg CO₂ avoided per MWh shifted, measured on held-out data the method never saw'
+          : 'Estimated gap in kg CO₂ per MWh shifted, on held-out data the method never saw'}</p>
         <div className={`mt-10 grid gap-8 sm:grid-cols-3 ${ok ? '' : 'opacity-85'}`}>
           <Stat label="2025 (decision)" e={v.realised_gap_2025} ok={ok} />
           <Stat label="2026 YTD (second check)" e={v.realised_gap_2026_ytd} ok={ok} />
           <div className={`border-t pt-4 ${ok ? 'border-ink' : 'border-dashed border-neutral'}`}>
             <div className="eyebrow">EDA prediction (in-sample)</div>
-            <div className="display mt-3 text-6xl sm:text-7xl"><Counter value={v.eda_predicted_gap} /></div>
+            <div className={`display mt-3 ${ok ? 'text-6xl sm:text-7xl' : 'text-4xl text-ink-2 sm:text-5xl'}`}><Counter value={v.eda_predicted_gap} /></div>
             <div className="mt-1 text-sm text-ink-2">predicted before the hold-out test</div>
           </div>
         </div>
