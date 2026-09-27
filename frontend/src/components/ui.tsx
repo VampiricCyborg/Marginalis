@@ -32,7 +32,7 @@ const KIND: Record<Kind, { box: string; icon: ReactNode; label: string }> = {
 export function Callout({ kind, title, children }: { kind: Kind; title?: string; children: ReactNode }) {
   const k = KIND[kind]
   return (
-    <div className={`flex gap-3 rounded-lg border-l-4 border p-3 text-sm leading-relaxed ${k.box}`} role={kind === 'warning' ? 'note' : undefined}>
+    <div className={`flex gap-3 rounded-2xl border-l-4 border p-4 text-sm leading-relaxed ${k.box}`} role={kind === 'warning' ? 'note' : undefined}>
       <svg aria-hidden width="18" height="18" viewBox="0 0 16 16" className="mt-0.5 shrink-0">{k.icon}</svg>
       <div>
         <div className="font-semibold">{title ?? k.label}</div>
@@ -43,7 +43,7 @@ export function Callout({ kind, title, children }: { kind: Kind; title?: string;
 }
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-xl bg-surface ring-1 ring-ring p-5 ${className}`}>{children}</section>
+  return <section className={`rounded-3xl bg-surface ring-1 ring-ring p-5 sm:p-8 ${className}`}>{children}</section>
 }
 
 export function EstimateLine({ e, unit = 'kg CO₂/MWh shifted' }: { e: Estimate; unit?: string }) {
@@ -57,7 +57,12 @@ export function EstimateLine({ e, unit = 'kg CO₂/MWh shifted' }: { e: Estimate
 }
 
 export function Spinner({ label = 'Loading' }: { label?: string }) {
-  return <div className="animate-pulse text-sm text-muted">{label}…</div>
+  return (
+    <div className="flex items-center gap-3 py-10 text-sm text-muted" role="status">
+      <span className="flex gap-1">{[0, 1, 2].map((i) => <span key={i} className="h-2 w-2 animate-bounce rounded-full bg-marginal" style={{ animationDelay: `${i * 0.12}s` }} />)}</span>
+      {label}…
+    </div>
+  )
 }
 
 export function ErrorBox({ error }: { error: unknown }) {

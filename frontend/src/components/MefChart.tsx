@@ -24,7 +24,7 @@ export function MefChart({ rows }: { rows: MefRow[] }) {
     avg: r.average_intensity_kg_per_mwh,
   }))
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={340}>
       <ComposedChart data={data} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
         <CartesianGrid stroke="var(--grid)" vertical={false} />
         <XAxis dataKey="hour" tickFormatter={(h) => `${String(h).padStart(2, '0')}`} ticks={[0, 3, 6, 9, 12, 15, 18, 21]}
@@ -35,9 +35,9 @@ export function MefChart({ rows }: { rows: MefRow[] }) {
         <Tooltip content={<Tip />} />
         <Legend wrapperStyle={{ fontSize: 12 }}
           formatter={(value) => <span style={{ color: 'var(--ink-2)' }}>{value}</span>} />
-        <Area dataKey="ci" name="Marginal 95% CI" fill="var(--marginal-soft)" stroke="none" legendType="square" isAnimationActive={false} />
-        <Line dataKey="mef" name="Marginal" stroke="var(--marginal)" strokeWidth={2} dot={false} isAnimationActive={false} />
-        <Line dataKey="avg" name="Average" stroke="var(--average)" strokeWidth={2} dot={false} isAnimationActive={false} />
+        <Area dataKey="ci" name="Marginal 95% CI" fill="var(--marginal-soft)" stroke="none" legendType="square" isAnimationActive animationDuration={900} />
+        <Line dataKey="mef" name="Marginal" stroke="var(--marginal)" strokeWidth={2} dot={false} isAnimationActive animationDuration={900} />
+        <Line dataKey="avg" name="Average" stroke="var(--average)" strokeWidth={2} dot={false} isAnimationActive animationDuration={900} />
       </ComposedChart>
     </ResponsiveContainer>
   )

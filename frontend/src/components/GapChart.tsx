@@ -1,3 +1,4 @@
+import { motion } from 'motion/react'
 import type { BAStatus, Estimate } from '../lib/api'
 import { BA_LABEL, fmt } from '../lib/api'
 
@@ -38,13 +39,20 @@ export function GapChart({ bas, period }: { bas: BAStatus[]; period: '2025' | '2
           <g key={b.ba_code}>
             <title>{`${BA_LABEL[b.ba_code]} ${period}: ${fmt(e.value)} kg CO2/MWh shifted (95% CI ${fmt(e.ci_low_95)} to ${fmt(e.ci_high_95)}) — ${ok ? 'validated' : 'not validated'}`}</title>
             <text x={left - 12} y={y + 4} textAnchor="end" fontSize="13" fontWeight="600" fill="var(--ink)">{BA_LABEL[b.ba_code]}</text>
-            <line x1={x(e.ci_low_95)} x2={x(e.ci_high_95)} y1={y} y2={y} stroke={color} strokeWidth="2.5"
-              strokeDasharray={ok ? undefined : '5 4'} />
-            {[e.ci_low_95, e.ci_high_95].map((v) => (
-              <line key={v} x1={x(v)} x2={x(v)} y1={y - 7} y2={y + 7} stroke={color} strokeWidth="2" />
+            <rect x={left - 70} y={y - rowH / 2 + 4} width={W - left - right + 80} height={rowH - 8} rx="10" className="fill-transparent transition-colors hover:fill-[var(--surface-2)]" />
+            <motion.line y1={y} y2={y} stroke={color} strokeWidth="2.5" strokeDasharray={ok ? undefined : '5 4'}
+              initial={{ x1: x(e.value), x2: x(e.value) }} animate={{ x1: x(e.ci_low_95), x2: x(e.ci_high_95) }}
+              transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1], delay: 0.2 + i * 0.12 }} />
+            {[e.ci_low_95, e.ci_high_95].map((v, j) => (
+              <motion.line key={j} y1={y - 7} y2={y + 7} stroke={color} strokeWidth="2"
+                initial={{ x1: x(e.value), x2: x(e.value), opacity: 0 }} animate={{ x1: x(v), x2: x(v), opacity: 1 }}
+                transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1], delay: 0.2 + i * 0.12 }} />
             ))}
-            <circle cx={x(e.value)} cy={y} r="6.5" fill={ok ? color : 'var(--surface)'} stroke={color} strokeWidth="2.5" />
-            <text x={x(e.value)} y={y - 12} textAnchor="middle" fontSize="11" fill="var(--ink)" className="tabular">{fmt(e.value)}</text>
+            <motion.circle cy={y} r="6.5" fill={ok ? color : 'var(--surface)'} stroke={color} strokeWidth="2.5"
+              initial={{ cx: x(0), scale: 0 }} animate={{ cx: x(e.value), scale: 1 }} transition={{ type: 'spring', stiffness: 120, damping: 16, delay: i * 0.12 }} />
+            <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.6 + i * 0.12 }}>
+              <text x={x(e.value)} y={y - 12} textAnchor="middle" fontSize="11" fill="var(--ink)" className="tabular">{fmt(e.value)}</text>
+            </motion.g>
             <g transform={`translate(${W - right + 16}, ${y - 11})`}>
               {ok ? (
                 <>

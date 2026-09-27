@@ -1,58 +1,54 @@
 @import "tailwindcss";
 
-/* Tokens: dataviz reference palette. Marginal = blue, average = orange everywhere.
-   Status colours are reserved for validation state and always paired with icon + label. */
+/* Palette: marginal = blue, average = orange everywhere (validated as a pair for CVD on both
+   surfaces). Status colours are reserved for validation state and always paired with icon + label.
+   Layout language: cream paper, black ink, dark "inverted" sections (.theme-dark). */
 :root {
   color-scheme: light;
-  --page: #f9f9f7;
-  --surface: #fcfcfb;
-  --surface-2: #f1f0ec;
-  --ink: #0b0b0b;
-  --ink-2: #52514e;
-  --muted: #898781;
-  --grid: #e1e0d9;
-  --axis: #c3c2b7;
-  --ring: rgba(11, 11, 11, 0.1);
+  --page: #efede6;
+  --surface: #f7f6f1;
+  --surface-2: #e5e2d8;
+  --ink: #0e0e0d;
+  --ink-2: #4c4b46;
+  --muted: #7c7a73;
+  --grid: #d9d6cc;
+  --axis: #b9b6aa;
+  --ring: rgba(14, 14, 13, 0.12);
   --marginal: #2a78d6;
   --marginal-soft: rgba(42, 120, 214, 0.18);
   --average: #eb6834;
   --good: #0ca30c;
   --good-text: #006300;
-  --good-bg: rgba(12, 163, 12, 0.08);
+  --good-bg: rgba(12, 163, 12, 0.09);
   --warning: #fab219;
   --warning-text: #7a5300;
-  --warning-bg: rgba(250, 178, 25, 0.12);
-  --neutral: #898781;
-  --neutral-bg: rgba(137, 135, 129, 0.1);
+  --warning-bg: rgba(250, 178, 25, 0.14);
+  --neutral: #7c7a73;
+  --neutral-bg: rgba(124, 122, 115, 0.12);
+  --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --page: #0d0d0d;
-    --surface: #1a1a19;
-    --surface-2: #232322;
-    --ink: #ffffff;
-    --ink-2: #c3c2b7;
-    --grid: #2c2c2a;
-    --axis: #383835;
-    --ring: rgba(255, 255, 255, 0.1);
-    --marginal: #3987e5;
-    --marginal-soft: rgba(57, 135, 229, 0.22);
-    --average: #d95926;
-    --good-text: #0ca30c;
-    --good-bg: rgba(12, 163, 12, 0.12);
-    --warning-text: #fab219;
-    --warning-bg: rgba(250, 178, 25, 0.1);
-    --neutral-bg: rgba(137, 135, 129, 0.16);
-  }
-}
-:root[data-theme="dark"] {
+
+.theme-dark {
   color-scheme: dark;
-  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232322; --ink: #ffffff; --ink-2: #c3c2b7;
-  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255, 255, 255, 0.1); --marginal: #3987e5;
-  --marginal-soft: rgba(57, 135, 229, 0.22); --average: #d95926; --good-text: #0ca30c;
-  --good-bg: rgba(12, 163, 12, 0.12); --warning-text: #fab219; --warning-bg: rgba(250, 178, 25, 0.1);
-  --neutral-bg: rgba(137, 135, 129, 0.16);
+  --page: #111111;
+  --surface: #1a1a19;
+  --surface-2: #242423;
+  --ink: #f4f2ec;
+  --ink-2: #bdbab0;
+  --muted: #8c8a83;
+  --grid: #2c2c2a;
+  --axis: #45443f;
+  --ring: rgba(255, 255, 255, 0.12);
+  --marginal: #4a90e8;
+  --marginal-soft: rgba(74, 144, 232, 0.24);
+  --average: #e0622d;
+  --good-text: #3ecf3e;
+  --good-bg: rgba(12, 163, 12, 0.16);
+  --warning-text: #fab219;
+  --warning-bg: rgba(250, 178, 25, 0.12);
+  --neutral-bg: rgba(140, 138, 131, 0.16);
+  background: var(--page);
+  color: var(--ink);
 }
 
 @theme inline {
@@ -74,13 +70,119 @@
   --color-warning-bg: var(--warning-bg);
   --color-neutral: var(--neutral);
   --color-neutral-bg: var(--neutral-bg);
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Inter Tight Variable", "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+html { background: var(--page); }
 body {
   background: var(--page);
   color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
+::selection { background: var(--marginal); color: #fff; }
 .tabular { font-variant-numeric: tabular-nums; }
+
+/* Display type — the Locomotive feel is mostly this: huge, tight, confident. */
+.display {
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.line-mask { overflow: hidden; display: block; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+
+/* Pill button with a fill that sweeps up on hover */
+.btn {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  border-radius: 999px; padding: 0.85rem 1.4rem;
+  font-weight: 500; line-height: 1;
+  border: 1px solid var(--ink); color: var(--ink);
+  transition: color 0.5s var(--ease-out);
+}
+.btn::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: var(--ink); border-radius: inherit;
+  transform: translateY(101%); transition: transform 0.6s var(--ease-out);
+}
+.btn:hover { color: var(--page); }
+.btn:hover::before { transform: translateY(0); }
+.btn-solid { background: var(--ink); color: var(--page); }
+.btn-solid::before { background: var(--marginal); }
+.btn-solid:hover { color: #fff; }
+.btn:disabled { opacity: 0.55; pointer-events: none; }
+
+/* Underline that draws in from the left */
+.link-draw { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.5s var(--ease-out); }
+.link-draw:hover, .link-draw.active { background-size: 100% 1px; }
+
+.field {
+  width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--axis);
+  padding: 0.55rem 0; font-size: 1.15rem; color: var(--ink); outline: none;
+  transition: border-color 0.3s;
+}
+.field:focus { border-color: var(--ink); }
+select.field { cursor: pointer; }
+
+/* Film grain overlay, very subtle */
+.grain::after {
+  content: ""; position: fixed; inset: -50%; pointer-events: none; z-index: 60; opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -4%); }
+  60% { transform: translate(-4%, -2%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); }
+}
+
+@keyframes pulse-ring { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(2.4); opacity: 0; } }
+.pulse-dot { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: currentColor; }
+.pulse-dot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: currentColor; animation: pulse-ring 1.8s var(--ease-out) infinite; }
+
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.spin-slow { animation: spin-slow 18s linear infinite; }
+
+/* Hide the native cursor only where the custom one is active (fine pointers) */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor, html.has-cursor * { cursor: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain::after, .pulse-dot::after, .spin-slow { animation: none; }
+  .btn::before, .link-draw { transition: none; }
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
