@@ -130,7 +130,7 @@ def schedule(profile: pd.DataFrame, ba: str, day: date, duration_h: int, load_mw
             "realised_saving_for_this_load_kg": {
                 "value": round(gap.value * load_mwh, 0), "ci_low_95": round(gap.ci_low * load_mwh, 0),
                 "ci_high_95": round(gap.ci_high * load_mwh, 0),
-                "basis": ("2025 hold-out average across days (realised, not predicted), scaled to load_mwh. "
+                "basis": ("2025 hold-out average across days (realised, not predicted), scaled to this load. "
                           "It is not specific to this date."),
             },
         }

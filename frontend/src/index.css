@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/* Tokens: dataviz reference palette. Marginal = blue, average = orange everywhere.
+   Status colours are reserved for validation state and always paired with icon + label. */
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --surface-2: #f1f0ec;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --ring: rgba(11, 11, 11, 0.1);
+  --marginal: #2a78d6;
+  --marginal-soft: rgba(42, 120, 214, 0.18);
+  --average: #eb6834;
+  --good: #0ca30c;
+  --good-text: #006300;
+  --good-bg: rgba(12, 163, 12, 0.08);
+  --warning: #fab219;
+  --warning-text: #7a5300;
+  --warning-bg: rgba(250, 178, 25, 0.12);
+  --neutral: #898781;
+  --neutral-bg: rgba(137, 135, 129, 0.1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #232322;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --ring: rgba(255, 255, 255, 0.1);
+    --marginal: #3987e5;
+    --marginal-soft: rgba(57, 135, 229, 0.22);
+    --average: #d95926;
+    --good-text: #0ca30c;
+    --good-bg: rgba(12, 163, 12, 0.12);
+    --warning-text: #fab219;
+    --warning-bg: rgba(250, 178, 25, 0.1);
+    --neutral-bg: rgba(137, 135, 129, 0.16);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232322; --ink: #ffffff; --ink-2: #c3c2b7;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255, 255, 255, 0.1); --marginal: #3987e5;
+  --marginal-soft: rgba(57, 135, 229, 0.22); --average: #d95926; --good-text: #0ca30c;
+  --good-bg: rgba(12, 163, 12, 0.12); --warning-text: #fab219; --warning-bg: rgba(250, 178, 25, 0.1);
+  --neutral-bg: rgba(137, 135, 129, 0.16);
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-grid: var(--grid);
+  --color-ring: var(--ring);
+  --color-marginal: var(--marginal);
+  --color-average: var(--average);
+  --color-good: var(--good);
+  --color-good-text: var(--good-text);
+  --color-good-bg: var(--good-bg);
+  --color-warning: var(--warning);
+  --color-warning-text: var(--warning-text);
+  --color-warning-bg: var(--warning-bg);
+  --color-neutral: var(--neutral);
+  --color-neutral-bg: var(--neutral-bg);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+.tabular { font-variant-numeric: tabular-nums; }

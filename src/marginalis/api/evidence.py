@@ -45,8 +45,8 @@ class Estimate:
         return self.ci_low <= 0 <= self.ci_high
 
     def as_dict(self) -> dict:
-        return {"value": round(self.value, 1), "ci_low_95": round(self.ci_low, 1),
-                "ci_high_95": round(self.ci_high, 1), "unit": self.unit}
+        return {"value": round(self.value, 3), "ci_low_95": round(self.ci_low, 3),
+                "ci_high_95": round(self.ci_high, 3), "unit": self.unit}
 
     def text(self) -> str:
         return f"{self.value:,.0f} {self.unit} (95% CI {self.ci_low:,.0f} to {self.ci_high:,.0f})"
@@ -164,7 +164,7 @@ def miso_overnight() -> dict:
     return {
         "local_hours": f"{hrs[0]:02d}:00–{hrs[1]:02d}:00",
         "what_this_is": ("Marginal emissions factor of overnight hours vs their average intensity. It is not a "
-                         "scheduling saving; see realised_gap_2025 for that."),
+                         "scheduling saving; the realised scheduling gap is reported separately."),
         "train": {"marginal": Estimate(tr["mef"], tr["ci_low"], tr["ci_high"]).as_dict(), "average": round(tr["average"], 1)},
         "holdout_2025": {"marginal": Estimate(ho["MEF"], ho["CI low"], ho["CI high"]).as_dict(), "average": round(ho["average"], 1)},
     }

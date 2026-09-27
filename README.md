@@ -34,3 +34,24 @@ reflect **which fuel ramps** from hour to hour, **not the efficiency of the
 plants that ramp**. A modern combined-cycle unit and an old gas peaker get the
 same rate. Plant-level CEMS data (EPA CAMPD) would address this and is a
 stretch goal.
+
+## Running it
+
+```bash
+docker compose up -d                 # local Postgres
+uv sync
+uv run marginalis ingest             # raw EIA-930, Grid Monitor workbooks, weather
+uv run marginalis build              # clean, validate, load
+uv run marginalis report             # reports/data_quality.md
+uv run marginalis evaluate           # pre-registered hold-out evaluation (method is frozen)
+
+cd frontend && npm install && npm run build && cd ..
+uv run uvicorn marginalis.api.app:app   # API + frontend on http://localhost:8000
+```
+
+`/api/ask` needs `GROQ_API_KEY` in `.env`. For frontend development, run `npm run dev` in
+`frontend/` (it proxies `/api` to port 8000).
+
+The frontend only displays what the API returns. Hold-out validation is shown on every
+chart and card: MISO is validated, and ERCOT and CAISO are marked "Not validated" wherever
+their numbers appear.

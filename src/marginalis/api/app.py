@@ -10,13 +10,13 @@ from datetime import date
 
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from marginalis import db
 from marginalis.api import evidence as ev
 from marginalis.api import service
-from marginalis.config import BAS
+from marginalis.config import BAS, ROOT
 
 STATE: dict = {}
 
@@ -104,3 +104,17 @@ def ask(req: AskRequest) -> dict:
         return agent.ask(req.question, client, STATE["profile"]).as_dict()
     except GroqError as exc:
         raise HTTPException(503, f"query layer unavailable: {exc}") from exc
+
+
+# --- Static frontend (frontend/dist), served last so it never shadows /api ---------------
+FRONTEND_DIST = ROOT / "frontend" / "dist"
+
+
+@app.get("/{path:path}", include_in_schema=False)
+def frontend(path: str):
+    if path.startswith("api/") or not FRONTEND_DIST.exists():
+        raise HTTPException(404)
+    target = (FRONTEND_DIST / path).resolve()
+    if path and target.is_file() and FRONTEND_DIST.resolve() in target.parents:
+        return FileResponse(target)
+    return FileResponse(FRONTEND_DIST / "index.html")  # client-side routes
