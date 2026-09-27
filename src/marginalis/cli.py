@@ -56,6 +56,14 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
     holdout_report.run()
 
 
+def cmd_ask(args: argparse.Namespace) -> None:
+    from marginalis.api.app import load_profile
+    from marginalis.ask import agent
+    from marginalis.ask.groq_client import GroqClient
+
+    print(agent.ask(" ".join(args.question), GroqClient(), load_profile()).text)
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="marginalis")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -82,6 +90,10 @@ def main(argv: list[str] | None = None) -> None:
 
     ev = sub.add_parser("evaluate", help="pre-registered hold-out evaluation (requires frozen method)")
     ev.set_defaults(func=cmd_evaluate)
+
+    ak = sub.add_parser("ask", help="ask a question in natural language (Groq)")
+    ak.add_argument("question", nargs="+")
+    ak.set_defaults(func=cmd_ask)
 
     args = parser.parse_args(argv)
     logging.basicConfig(

@@ -11,6 +11,7 @@ from datetime import date
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 from marginalis import db
 from marginalis.api import evidence as ev
@@ -86,3 +87,20 @@ def hours(ba: str, start: date, end: date) -> dict:
             return service.hours(conn, ba, start, end)
         except service.BadRequest as exc:
             raise HTTPException(400, str(exc)) from exc
+
+
+class AskRequest(BaseModel):
+    question: str = Field(..., min_length=3, max_length=500)
+
+
+@app.post("/api/ask")
+def ask(req: AskRequest) -> dict:
+    """Natural-language question, answered from mef_profile and the committed reports only."""
+    from marginalis.ask import agent
+    from marginalis.ask.groq_client import GroqClient, GroqError
+
+    try:
+        client = STATE.setdefault("groq", GroqClient())
+        return agent.ask(req.question, client, STATE["profile"]).as_dict()
+    except GroqError as exc:
+        raise HTTPException(503, f"query layer unavailable: {exc}") from exc
