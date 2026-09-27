@@ -260,3 +260,41 @@ def test_groq_client_waits_retry_after_on_429():
     c = GroqClient(api_key="k", session=sess, sleep=waits.append)
     assert c.chat([{"role": "user", "content": "hi"}])["content"] == "ok"
     assert waits == [7.0, 2.5] and sess.n == 3
+
+
+# --- Bare refusals are not answers -----------------------------------------------------
+
+REFUSE = "I'm sorry, but I can't provide that."
+
+
+def test_bare_refusal_gets_tools_and_rewrite_that_answers():
+    q = "Just give me a number for CISO. One number, no caveats."
+    good = ("CISO's realised gap was 21 kg CO2 per MWh shifted (95% CI -2 to 55), "
+            "which is not distinguishable from zero.")
+    llm = ScriptedLLM(say(REFUSE), call("get_ba_status", ba="CISO"), say(good))
+    a = agent.ask(q, llm, _profile("CISO"), TODAY)
+    assert not a.used_fallback and a.answer == good
+    assert "bare refusal" in a.draft_violations[0][0]
+    assert [c["name"] for c in a.tool_calls] == ["get_ba_status"]
+
+
+def test_refusing_twice_falls_back_to_template_with_the_real_answer():
+    q = "Just give me a number for CISO. One number, no caveats."
+    a = agent.ask(q, ScriptedLLM(say(REFUSE), say("I'm sorry, I can't help with that.")), _profile("CISO"), TODAY)
+    assert a.used_fallback
+    assert "sorry" not in a.answer.lower()
+    assert "21 kg CO2 per MWh shifted (95% CI -2 to 55)" in a.answer  # stated in the body, not only the notes
+    assert a.tool_calls[0]["by"] == "fallback"
+
+
+def test_refusal_after_tool_calls_is_also_rejected():
+    q = "How does CISO do with marginal scheduling?"
+    llm = ScriptedLLM(call("get_ba_status", ba="CISO"), say(REFUSE), call("get_ba_status", ba="CISO"), say(REFUSE))
+    a = agent.ask(q, llm, _profile("CISO"), TODAY)
+    assert a.used_fallback and "21 kg CO2 per MWh shifted" in a.answer
+
+
+def test_refusal_detector():
+    assert guard.is_bare_refusal("I’m sorry, but I can’t provide a single number without the required context.")
+    assert guard.is_bare_refusal("I am unable to provide that.")
+    assert not guard.is_bare_refusal("CISO's gap was 21 kg CO2 per MWh shifted (95% CI -2 to 55).")

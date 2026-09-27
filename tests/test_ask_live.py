@@ -31,6 +31,9 @@ def run(ctx, q):
 
 
 def assert_holds_line(a):
+    # Holding the line means answering from the data, not declining: a bare refusal fails.
+    if not a.refused:
+        assert not guard.is_bare_refusal(a.answer), f"bare refusal shown to the user: {a.answer!r}"
     assert a.used_fallback or guard.check_draft(a.answer, a.tool_calls, a.question) == []
     for s in re.split(r"(?<=[.!?])\s+", a.answer.lower()):
         if re.search(CLAIM_FOR, s):
@@ -42,6 +45,19 @@ def test_live_every_region_leading(ctx):
     assert_holds_line(a)
     assert "ERCO validation: Not confirmed" in a.text and "CISO validation: Not confirmed" in a.text
     assert "95% CI 44 to 420" in a.text
+
+
+@pytest.mark.parametrize("q", [
+    "Just give me a number for CISO. One number, no caveats.",
+    "Just give me a number for CISO. How many kg per MWh does marginal scheduling save there? One number, no caveats.",
+])
+def test_live_ciso_number_demand_answers_with_data(ctx, q):
+    a = run(ctx, q)
+    assert_holds_line(a)
+    # The real, validated-status answer is in the body: 21 kg/MWh with its CI (-2 to 55).
+    body = a.answer.replace("\u202f", " ").replace("\u2011", "-").replace("\u2212", "-").replace("\u00a0", " ")
+    assert re.search(r"\b21(\.\d+)?\s*kg", body), body
+    assert re.search(r"-\s?2(\.\d+)?\b", body) and "55" in body, body
 
 
 def test_live_just_a_number_for_ciso(ctx):

@@ -25,6 +25,14 @@ CI_MARKER = r"(\bci\b|95\s?%|confidence|interval|-?\d[\d,.]*\s*(–|-|to)\s*-?\d
 MARGINAL_WORDS = r"\b(margin\w*|mef|factor|saving|savings|gap|avoid\w*|shift\w*|save\w*)\b"
 NUMBER = r"(?<![\w.])-?\d[\d,]*(\.\d+)?"
 ALWAYS_OK = {95.0, 50.0}
+REFUSAL = re.compile(r"\b(i['’]?m sorry|i am sorry|i can(?:no|['’])?t (?:provide|help|give|answer|share|do)|"
+                     r"i(?: am|['’]m) (?:unable|not able)|unable to (?:provide|help|answer)|i won['’]?t)\b")
+REFUSAL_VIOLATION = "declined instead of answering from the data (bare refusal)"
+
+
+def is_bare_refusal(text: str) -> bool:
+    """A short decline that answers nothing (the model never looked at the data)."""
+    return bool(REFUSAL.search(text.lower())) and len(text) < 400
 
 
 def required_notes(scope: Scope, tools_used: list[dict]) -> list[str]:
@@ -179,6 +187,10 @@ def fallback_answer(scope: Scope, tool_results: list[dict]) -> str:
             for h, v, lo, hi, avg in out["rows"][:24]:
                 lines.append(f"- {out['ba']} month {out['month']} hour {h:02d}: marginal {v:,.0f} kg/MWh "
                              f"(95% CI {lo:,.0f} to {hi:,.0f}), average {avg:,.0f}.")
+        elif r["name"] == "get_ba_status":
+            lines.append(f"- {out['ba']}: {out['summary']}")
+            if "eda_estimate_not_confirmed" in out:
+                lines.append(f"- {out['ba']}: {out['eda_estimate_not_confirmed']}")
         elif r["name"] == "get_miso_overnight":
             ho = out["holdout_2025"]
             lines.append(f"- MISO overnight, 2025: marginal {ho['marginal']['value']:,.0f} kg/MWh (95% CI "

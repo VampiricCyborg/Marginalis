@@ -60,22 +60,13 @@ class Answer:
         return {**asdict(self), "text": self.text}
 
 
-def ask(question: str, client, profile: pd.DataFrame, today: date | None = None) -> Answer:
-    today = today or date.today()
-    sc = scope.parse(question, today)
-    refusal = guard.out_of_scope_answer(sc)
-    if refusal:
-        return Answer(question, refusal, guard.required_notes(sc, []), refused=True)
-
-    messages = [{"role": "system", "content": system_prompt(today)}, {"role": "user", "content": question}]
-    calls: list[dict] = []
-    draft = ""
+def _tool_loop(client, messages: list[dict], calls: list[dict], profile: pd.DataFrame) -> str:
+    """Let the model call tools until it writes text; returns that text ('' if it never does)."""
     for _ in range(MAX_TOOL_ROUNDS):
         msg = client.chat(messages, tools.SCHEMAS)
         tool_calls = msg.get("tool_calls") or []
         if not tool_calls:
-            draft = (msg.get("content") or "").strip()
-            break
+            return (msg.get("content") or "").strip()
         messages.append({"role": "assistant", "content": msg.get("content") or "", "tool_calls": tool_calls})
         for tc in tool_calls:
             name = tc["function"]["name"]
@@ -86,22 +77,49 @@ def ask(question: str, client, profile: pd.DataFrame, today: date | None = None)
             result = tools.run(name, args, profile)
             calls.append({"name": name, "args": args, "result": result})
             messages.append({"role": "tool", "tool_call_id": tc["id"], "content": json.dumps(result)})
-    else:
-        draft = ""
+    return ""
+
+
+def ask(question: str, client, profile: pd.DataFrame, today: date | None = None) -> Answer:
+    today = today or date.today()
+    sc = scope.parse(question, today)
+    refusal = guard.out_of_scope_answer(sc)
+    if refusal:
+        return Answer(question, refusal, guard.required_notes(sc, []), refused=True)
+
+    messages = [{"role": "system", "content": system_prompt(today)}, {"role": "user", "content": question}]
+    calls: list[dict] = []
+    draft = _tool_loop(client, messages, calls, profile)
 
     violations_log = []
     for attempt in range(2):
         v = guard.check_draft(draft, calls, question, sc) if draft else ["empty answer"]
+        if draft and guard.is_bare_refusal(draft):  # out-of-scope questions never reach here
+            v = [guard.REFUSAL_VIOLATION, *v]
         violations_log.append(v)
         if not v:
             break
         if attempt == 0:
-            messages += [{"role": "assistant", "content": draft},
-                         {"role": "user", "content": "Rewrite your answer. It broke these rules: " + "; ".join(v)
-                          + ". Use only numbers from the tool results, give a 95% CI with every marginal figure, "
-                            "and do not present ERCO or CISO results as validated."}]
-            draft = (client.chat(messages).get("content") or "").strip()
+            messages.append({"role": "assistant", "content": draft})
+            if guard.REFUSAL_VIOLATION in v:
+                # The model declined without looking at the data: give it the tools again.
+                messages.append({"role": "user", "content": (
+                    "Do not decline. The data supports an answer. Call the tools, then answer from the tool "
+                    "results, giving every marginal figure, saving or gap with its 95% CI. If the question asks "
+                    "about a region in general (not a specific month or hour), its number is the hold-out result "
+                    "from get_ba_status. If a result is not validated, say so plainly rather than refusing.")})
+                draft = _tool_loop(client, messages, calls, profile)
+            else:
+                messages.append({"role": "user", "content": "Rewrite your answer. It broke these rules: " + "; ".join(v)
+                                 + ". Use only numbers from the tool results, give a 95% CI with every marginal "
+                                   "figure, and do not present ERCO or CISO results as validated."})
+                draft = (client.chat(messages).get("content") or "").strip()
     used_fallback = bool(violations_log[-1])
+    if used_fallback and not calls:
+        # Fallback still states the answer: fetch each in-scope BA's validated status in code.
+        for ba in (list(ev.results()["decision"]) if sc.all_regions else sc.bas):
+            calls.append({"name": "get_ba_status", "args": {"ba": ba}, "result": tools.get_ba_status(ba),
+                          "by": "fallback"})
     answer = guard.fallback_answer(sc, calls) if used_fallback else draft
     return Answer(question, answer, guard.required_notes(sc, calls), calls,
                   [v for v in violations_log if v], used_fallback)
