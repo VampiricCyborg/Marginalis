@@ -45,6 +45,8 @@ counts per cell (min 141, median ≈165) had been looked at.
   2. either hour has any interpolated value (`imputed_either`);
   3. the regressor or ΔCO₂ is NULL;
   4. `derived` only: either hour has incomplete fossil data (`derived_complete_both` false).
+  5. either hour falls on a local day with gas reported as "Other" (see
+     amendment of 2026-09-27).
   No exclusion is made for the CISO hydro/other gap (Oct 2019 – Aug 2020) in
   the MEF regressions: demand, fossil generation and CO₂ are unaffected by it.
 - **Estimator.** Per stratum, OLS with intercept: ΔCO₂ = α + β·Δx + ε. The
@@ -88,3 +90,13 @@ confidence interval of that difference excludes zero.
   as this document reserved. Evaluation and decision threshold unchanged.
   MISO local time is Central, not EIA's Eastern reporting zone, because most
   MISO load is in Central time.
+- **2026-09-27 (after EDA, before any estimation)** — Added exclusion 5:
+  drop every hour of a local day on which any hour reports natural gas
+  below 5% **and** "Other" above 20% of net generation, and drop deltas
+  touching those hours. EDA found five ERCO days (2019-12-18, 2020-01-08,
+  2020-01-15, 2020-01-22, 2020-03-18) where EIA-930 reports ~20 GW of gas as
+  "Other" for a whole local day. Both emissions series inherit the error, and
+  the day boundaries produce spurious ±25 GW fossil deltas. The rule
+  deliberately does not trigger on CISO, whose "Other" carries battery
+  storage (charging and discharging) and legitimately exceeds gas on some
+  2024 spring evenings. CISO's gas share never falls below 8%.
