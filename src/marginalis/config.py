@@ -36,7 +36,7 @@ HOLDOUT_YTD = Split("holdout_2026ytd", _utc(2026, 1, 1), DATA_END)
 SPLITS = (TRAIN, HOLDOUT, HOLDOUT_YTD)
 
 # Flip to True only once the method is frozen (see docs/preregistration.md).
-METHOD_FROZEN = False
+METHOD_FROZEN = True
 
 
 class HeldOutDataError(RuntimeError):

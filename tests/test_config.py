@@ -20,3 +20,9 @@ def test_holdout_refused_until_frozen():
 
 def test_ba_build_order():
     assert list(config.BAS) == ["ERCO", "CISO", "MISO"]
+
+
+def test_holdout_allowed_once_frozen():
+    if config.METHOD_FROZEN:
+        assert config.require_split(config.HOLDOUT) is config.HOLDOUT
+        assert config.require_split(config.HOLDOUT_YTD) is config.HOLDOUT_YTD
