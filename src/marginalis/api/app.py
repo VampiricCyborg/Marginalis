@@ -125,7 +125,7 @@ def ask(req: AskRequest) -> dict:
     from marginalis.ask.groq_client import GroqClient, GroqError
 
     try:
-        client = STATE.setdefault("groq", GroqClient())
+        client = STATE.get("groq") or STATE.setdefault("groq", GroqClient())  # create lazily
         return agent.ask(req.question, client, STATE["profile"]).as_dict()
     except GroqError as exc:
         raise HTTPException(503, f"query layer unavailable: {exc}") from exc
