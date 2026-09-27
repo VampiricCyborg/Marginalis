@@ -50,7 +50,21 @@ def required_notes(scope: Scope, tools_used: list[dict]) -> list[str]:
     hour_call = any(c["name"] == "get_mef" and c["args"].get("hour") is not None for c in tools_used)
     if scope.specific_hour or hour_call or ((scope.specific_day or schedule_called) and scope.quantity_intent):
         notes.append("Single-hour caution: " + ev.calibration_note()["text"])
+    notes += [date_hour_note(d, h) for d, h in scope.date_hours]
     return notes
+
+
+def date_hour_note(d, h: int) -> str:
+    slopes = ev.calibration_note()["calibration_slopes_2025"].values()
+    return (f"Specific date and hour: this reflects the typical {d:%B} {h:02d}:00 (local) pattern from "
+            f"2019–2024 (calibration slopes {min(slopes):.2f}–{max(slopes):.2f}), not a measurement of "
+            f"{d.isoformat()}.")
+
+
+def _date_patterns(d) -> str:
+    month = d.strftime("%B").lower()
+    return (rf"({d.isoformat()}|\b{d.day}(st|nd|rd|th)?\s+{month}\b|\b{month}\s+{d.day}(st|nd|rd|th)?\b|"
+            rf"\bthat (day|date|hour)\b|\bthis (day|date)\b)")
 
 
 def _numbers(text: str) -> list[float]:
@@ -81,8 +95,16 @@ def _sentences(text: str) -> list[str]:
     return [s for s in re.split(r"(?<=[.!?])\s+|\n+", text) if s.strip()]
 
 
-def check_draft(draft: str, tool_results: list[dict], question: str) -> list[str]:
+MEASUREMENT = r"\b(measured|observed|actual|actually|recorded|was emitted|emitted|caused|did cause)\b"
+TYPICAL = r"\b(typical\w*|pattern|profile|2019|historical|on average|usual\w*)\b"
+PARITY = r"\b(both|similar\w*|same|equal\w*|comparable|likewise|as well|too|matches|match)\b"
+
+
+def check_draft(draft: str, tool_results: list[dict], question: str, sc: Scope | None = None) -> list[str]:
     """List of rule violations; empty means the draft may be shown."""
+    from marginalis.ask.scope import parse
+
+    sc = sc or parse(question)
     violations = []
     pool = evidence_numbers(tool_results, [question, json.dumps(_status_facts())])
     stripped = re.sub(r"\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}:\d{2}\b", " ", draft)
@@ -105,6 +127,18 @@ def check_draft(draft: str, tool_results: list[dict], question: str) -> list[str
                     violations.append(f"presents an unvalidated {ba} result as validated: {s.strip()[:120]!r}")
             if re.search(GENERAL, low):
                 violations.append(f"generalises a result to all regions: {s.strip()[:120]!r}")
+        negated = bool(re.search(NEGATION, low))
+        # A typical month x hour factor must not be presented as a measurement of one day.
+        if re.search(KG_NUMBER, low) and not re.search(TYPICAL, low):
+            if re.search(MEASUREMENT, low) and not negated:
+                violations.append(f"presents a typical factor as a measurement: {s.strip()[:120]!r}")
+            elif any(re.search(_date_patterns(d), low) for d, _ in sc.date_hours):
+                violations.append(f"ties a typical factor to a specific date: {s.strip()[:120]!r}")
+        # Parity between a hold-out-confirmed and an unconfirmed BA.
+        named = {ba for ba, pat in BA_WORDS.items() if re.search(pat, low)}
+        confirmed = {ba for ba in named if ev.is_confirmed(ba)}
+        if confirmed and named - confirmed and re.search(PARITY, low) and not negated:
+            violations.append(f"implies parity between confirmed and unconfirmed BAs: {s.strip()[:120]!r}")
     return violations
 
 

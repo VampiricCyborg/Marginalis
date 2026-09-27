@@ -41,6 +41,13 @@ class Scope:
     savings_intent: bool = False
     specific_hour: bool = False
     quantity_intent: bool = False
+    hours: list[int] = field(default_factory=list)  # concrete local hours mentioned (0-23)
+
+    @property
+    def date_hours(self) -> list[tuple[date, int]]:
+        """Concrete (date, hour) pairs: a specific day AND a specific hour, both in coverage."""
+        lo, hi = COVERAGE
+        return [(d, h) for d in self.dates if lo <= d <= hi for h in self.hours][:4]
 
     @property
     def out_of_range(self) -> list[str]:
@@ -56,6 +63,23 @@ class Scope:
     @property
     def specific_day(self) -> bool:
         return bool(self.dates)
+
+
+def parse_hours(q: str) -> list[int]:
+    """Concrete clock hours: '7pm', '7:30 pm', '19:00', 'noon', 'midnight', 'at 19'."""
+    hours: list[int] = []
+    for m in re.finditer(r"\b(\d{1,2})(?::\d{2})?\s?(a\.?m\.?|p\.?m\.?)(?![a-z])", q):
+        h = int(m[1]) % 12 + (12 if m[2].startswith("p") else 0)
+        if int(m[1]) <= 12:
+            hours.append(h)
+    q_no_ampm = re.sub(r"\b\d{1,2}(?::\d{2})?\s?(a\.?m\.?|p\.?m\.?)(?![a-z])", " ", q)
+    hours += [int(m[1]) for m in re.finditer(r"\b(\d{1,2}):\d{2}\b", q_no_ampm) if int(m[1]) <= 23]
+    hours += [int(m[1]) for m in re.finditer(r"\bat\s+(\d{1,2})\b(?!:)", q_no_ampm) if int(m[1]) <= 23]
+    if re.search(r"\bnoon\b", q):
+        hours.append(12)
+    if re.search(r"\bmidnight\b", q):
+        hours.append(0)
+    return list(dict.fromkeys(hours))
 
 
 def parse(question: str, today: date | None = None) -> Scope:
@@ -86,6 +110,7 @@ def parse(question: str, today: date | None = None) -> Scope:
         y = int(m[1])
         if not any(d.year == y for d in s.dates) and not any(a.year == y for a, _ in s.periods):
             s.periods.append((date(y, 1, 1), date(y, 12, 31)))
+    s.hours = parse_hours(re.sub(r"\b\d{4}-\d{2}-\d{2}\b", " ", q))
     s.savings_intent = bool(re.search(SAVINGS, q))
     s.specific_hour = bool(re.search(SPECIFIC_HOUR, q))
     s.quantity_intent = bool(re.search(QUANTITY, q))

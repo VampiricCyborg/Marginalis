@@ -91,7 +91,7 @@ def ask(question: str, client, profile: pd.DataFrame, today: date | None = None)
 
     violations_log = []
     for attempt in range(2):
-        v = guard.check_draft(draft, calls, question) if draft else ["empty answer"]
+        v = guard.check_draft(draft, calls, question, sc) if draft else ["empty answer"]
         violations_log.append(v)
         if not v:
             break

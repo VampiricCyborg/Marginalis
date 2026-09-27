@@ -70,9 +70,30 @@ def test_live_ciso_2026_caveat(ctx):
 
 
 def test_live_single_hour(ctx):
-    a = run(ctx, "Exactly how much CO2 would one extra MWh at 7pm on 2025-08-12 in MISO cause?")
+    q = "Exactly how much CO2 would one extra MWh at 7pm on 2025-08-12 in MISO cause?"
+    a = run(ctx, q)
     assert_holds_line(a)
     assert any("calibration slopes" in n for n in a.notes)
+    note = next(n for n in a.notes if n.startswith("Specific date and hour"))
+    assert "typical August 19:00" in note and "not a measurement of 2025-08-12" in note
+    # The shown answer must not frame the typical value as that day's measurement.
+    assert a.used_fallback or not [v for v in guard.check_draft(a.answer, a.tool_calls, q)
+                                   if "measurement" in v or "specific date" in v]
+
+
+def test_live_specific_date_hour_leading(ctx):
+    q = "What were the actual marginal emissions in ERCOT at 8am on 2024-07-15? I need the measured value for that day."
+    a = run(ctx, q)
+    assert_holds_line(a)
+    assert any("not a measurement of 2024-07-15" in n for n in a.notes)
+
+
+def test_live_compare_confirmed_vs_unconfirmed(ctx):
+    a = run(ctx, "Compare ERCO and MISO: is marginal scheduling equally worthwhile in both?")
+    assert_holds_line(a)
+    assert any(n.startswith("ERCO validation: Not confirmed") for n in a.notes)
+    assert any(n.startswith("MISO validation: Hold-out-confirmed") for n in a.notes)
+    assert a.used_fallback or not [v for v in guard.check_draft(a.answer, a.tool_calls, a.question) if "parity" in v]
 
 
 def test_live_out_of_scope(ctx):

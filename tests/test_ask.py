@@ -128,9 +128,73 @@ def test_ciso_before_2026_has_no_misfire_caveat():
 def test_single_hour_prediction_gets_calibration_note():
     q = "How much CO2 would 1 MWh at 3pm on 2025-07-10 in MISO add?"
     llm = ScriptedLLM(call("get_mef", ba="MISO", month=7, hour=15),
-                      say("About 800 kg CO2 (95% CI 700 to 900) at the margin for that hour."))
+                      say("About 800 kg CO2 (95% CI 700 to 900) at the margin for that hour."),
+                      say("The typical July 15:00 marginal factor from 2019-2024 is 800 kg CO2/MWh (95% CI 700 to 900)."))
     a = agent.ask(q, llm, _profile(), TODAY)
     assert any("calibration slopes" in n and "0.59" in n for n in a.notes)
+    assert any("ties a typical factor to a specific date" in v for v in a.draft_violations[0])
+
+
+# --- Specific date + hour: typical pattern, never a measurement ------------------------
+
+def test_specific_date_and_hour_gets_code_note_and_measurement_framing_rejected():
+    q = "How much CO2 would one extra MWh at 7pm on 2025-08-12 in MISO cause?"
+    measured = "On 2025-08-12 at 19:00, one extra MWh caused 800 kg CO2 (95% CI 700 to 900)."
+    typical = "The typical August 19:00 marginal factor from 2019-2024 is 300 kg CO2/MWh (95% CI 200 to 400)."
+    llm = ScriptedLLM(call("get_mef", ba="MISO", month=8, hour=19), say(measured), say(typical))
+    a = agent.ask(q, llm, _profile(), TODAY)
+    assert not a.used_fallback and a.answer == typical
+    assert any("measurement" in v or "specific date" in v for v in a.draft_violations[0])
+    note = next(n for n in a.notes if n.startswith("Specific date and hour"))
+    assert "typical August 19:00 (local) pattern from 2019–2024" in note
+    assert "not a measurement of 2025-08-12" in note and "0.59–0.84" in note
+
+
+@pytest.mark.parametrize("bad", [
+    "On 12 August 2025, one extra MWh at 7pm added 300 kg CO2 (95% CI 200 to 400).",
+    "The actual marginal emissions that evening were 300 kg CO2/MWh (95% CI 200 to 400).",
+    "At that hour the grid emitted 300 kg CO2 per extra MWh (95% CI 200 to 400).",
+])
+def test_measurement_phrasings_are_all_rejected(bad):
+    q = "How much CO2 would one extra MWh at 7pm on 2025-08-12 in MISO cause?"
+    assert guard.check_draft(bad, [{"x": [300, 200, 400]}], q)
+
+
+def test_general_time_of_day_question_has_no_specific_date_note():
+    q = "What's MISO's marginal factor at 7pm in August?"
+    llm = ScriptedLLM(call("get_mef", ba="MISO", month=8, hour=19),
+                      say("The typical August 19:00 marginal factor is 300 kg CO2/MWh (95% CI 200 to 400)."))
+    a = agent.ask(q, llm, _profile(), TODAY)
+    assert not any(n.startswith("Specific date and hour") for n in a.notes)
+
+
+def test_hour_parsing():
+    assert scope.parse_hours("at 7pm and 7:30 a.m. and 19:00 and noon") == [19, 7, 12]
+    assert scope.parse("MISO on 2025-08-12 at 19", TODAY).date_hours == [(date(2025, 8, 12), 19)]
+    assert scope.parse("MISO on 2025-08-12", TODAY).date_hours == []  # day but no hour
+
+
+# --- Two-BA comparison: statuses independent, no parity --------------------------------
+
+def test_compare_erco_and_miso_attaches_each_status_and_rejects_parity():
+    q = "Compare ERCO and MISO for marginal scheduling."
+    parity = "Both ERCOT and MISO show similar benefits from marginal scheduling."
+    llm = ScriptedLLM(call("get_ba_status", ba="ERCO"), say(parity), say(parity))
+    a = agent.ask(q, llm, _profile("ERCO"), TODAY)
+    assert a.used_fallback
+    assert any("parity" in v for v in a.draft_violations[0])
+    erco = [n for n in a.notes if n.startswith("ERCO validation:")]
+    miso = [n for n in a.notes if n.startswith("MISO validation:")]
+    assert len(erco) == 1 and "Not confirmed" in erco[0] and "not distinguishable from zero" in erco[0]
+    assert len(miso) == 1 and "Hold-out-confirmed" in miso[0]
+
+
+def test_contrastive_comparison_passes():
+    q = "Compare ERCO and MISO for marginal scheduling."
+    ok = ("MISO's result was confirmed in the hold-out, but ERCOT's was not: its gap of 157 kg CO2 per MWh "
+          "shifted (95% CI -51 to 277) is not distinguishable from zero.")
+    a = agent.ask(q, ScriptedLLM(call("get_ba_status", ba="ERCO"), say(ok)), _profile("ERCO"), TODAY)
+    assert not a.used_fallback and a.answer == ok
 
 
 # --- Out of scope: refused before any LLM call -----------------------------------------
