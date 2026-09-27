@@ -51,7 +51,7 @@ function Hero() {
           When you run flexible load matters. Most “run it when the grid is green” advice reads average intensity. We tested whether the marginal factor does better — and where it doesn't.
         </motion.p>
         <motion.div className="flex items-center gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}>
-          <Magnetic><a href="#try" className="btn btn-solid" data-cursor="Try">Try the load window ↓</a></Magnetic>
+          <Magnetic><a href="#try" className="btn btn-solid">Try the load window ↓</a></Magnetic>
           <div className="relative hidden h-24 w-24 sm:block" aria-hidden>
             <svg className="spin-slow absolute inset-0" viewBox="0 0 100 100">
               <defs><path id="sc" d="M50 50 m-38 0 a38 38 0 1 1 76 0 a38 38 0 1 1 -76 0" /></defs>
@@ -75,7 +75,7 @@ function TiltCard({ children, to, dark = false }: { children: ReactNode; to: str
     <motion.div style={{ rotateX: rx, rotateY: ry, transformPerspective: 900 }} className="h-full"
       onPointerMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); mx.set((e.clientX - r.left) / r.width); my.set((e.clientY - r.top) / r.height) }}
       onPointerLeave={() => { mx.set(0.5); my.set(0.5) }}>
-      <Link to={to} data-cursor="Open" className={`group relative flex h-full min-h-[340px] flex-col justify-between overflow-hidden rounded-3xl p-8 ${dark ? 'theme-dark' : 'bg-surface ring-1 ring-ring'}`}>
+      <Link to={to} className={`group relative flex h-full min-h-[340px] flex-col justify-between overflow-hidden rounded-3xl p-8 ${dark ? 'theme-dark' : 'bg-surface ring-1 ring-ring'}`}>
         <motion.span aria-hidden className="pointer-events-none absolute inset-0" style={{ background: bg }} />
         {children}
       </Link>

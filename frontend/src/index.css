@@ -151,11 +151,6 @@ select.field { cursor: pointer; }
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 .spin-slow { animation: spin-slow 18s linear infinite; }
 
-/* Hide the native cursor only where the custom one is active (fine pointers) */
-@media (hover: hover) and (pointer: fine) {
-  html.has-cursor, html.has-cursor * { cursor: none !important; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .grain::after, .pulse-dot::after, .spin-slow { animation: none; }
   .btn::before, .link-draw { transition: none; }

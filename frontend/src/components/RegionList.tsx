@@ -42,7 +42,7 @@ export function RegionList({ bas }: { bas: BAStatus[] }) {
           const ok = b.scheduling_recommendation_validated
           return (
             <li key={b.ba_code} className="border-b border-ink/15">
-              <Link to={`/ba/${b.ba_code}`} data-cursor="Explore" onPointerEnter={(e) => {
+              <Link to={`/ba/${b.ba_code}`} onPointerEnter={(e) => {
                   if (!active) { sx.jump(e.clientX); sy.jump(e.clientY) }
                   x.set(e.clientX); y.set(e.clientY); setActive(b.ba_code)
                 }}

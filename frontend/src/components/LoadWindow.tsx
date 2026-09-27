@@ -141,7 +141,7 @@ export function LoadWindow({ bas }: { bas: BAStatus[] }) {
                 </g>
               ))}
               {/* selected window */}
-              <motion.g animate={{ x: cw * s }} transition={{ type: 'spring', stiffness: 380, damping: 36 }} data-cursor="Drag"
+              <motion.g animate={{ x: cw * s }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}
                 role="slider" tabIndex={0} aria-label="Load window start hour" aria-valuemin={0} aria-valuemax={24 - dur} aria-valuenow={s}
                 aria-valuetext={`${s}:00 to ${s + dur}:00`} className="cursor-grab outline-none focus-visible:[&>rect]:stroke-[3]"
                 onKeyDown={(e) => {

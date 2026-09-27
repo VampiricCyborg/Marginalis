@@ -138,7 +138,7 @@ export default function BAPage() {
         </div>
         <div className="mt-8 flex flex-wrap items-center gap-2" role="group" aria-label="Month">
           <Magnetic>
-            <button onClick={() => setPlaying(!playing)} aria-pressed={playing} className={`btn py-2! text-sm ${playing ? 'btn-solid' : ''}`} data-cursor={playing ? 'Pause' : 'Play'}>
+            <button onClick={() => setPlaying(!playing)} aria-pressed={playing} className={`btn py-2! text-sm ${playing ? 'btn-solid' : ''}`}>
               {playing ? '❚❚ Pause' : '▶ Play the year'}
             </button>
           </Magnetic>
@@ -159,7 +159,7 @@ export default function BAPage() {
         <div className="mt-8"><Link to={`/schedule?ba=${ba}`} className="btn">Plan a load in {BA_LABEL[ba]} →</Link></div>
       </section>
 
-      <Link to={`/ba/${next}`} data-cursor="Next" className="group block border-t border-ink/15 px-4 py-16 sm:px-8">
+      <Link to={`/ba/${next}`} className="group block border-t border-ink/15 px-4 py-16 sm:px-8">
         <p className="eyebrow">Next region</p>
         <div className="mt-4 flex items-center justify-between">
           <span className="display text-[18vw] transition-transform duration-700 group-hover:translate-x-6 sm:text-[12vw]">{BA_LABEL[next]}</span>

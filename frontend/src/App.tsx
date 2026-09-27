@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'motion/react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { Footer, Nav, PageTransition, Preloader } from './components/Shell'
-import { Cursor, ScrollProgress, SmoothScroll } from './lib/motion'
+import { ScrollProgress, SmoothScroll } from './lib/motion'
 import Ask from './pages/Ask'
 import BAPage from './pages/BAPage'
 import Overview from './pages/Overview'
@@ -13,7 +13,6 @@ export default function App() {
     <SmoothScroll>
       <div className="grain min-h-screen">
         <Preloader />
-        <Cursor />
         <ScrollProgress />
         <Nav />
         <AnimatePresence mode="wait">

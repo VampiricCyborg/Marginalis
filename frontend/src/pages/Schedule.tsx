@@ -115,7 +115,7 @@ export default function Schedule() {
         <p className="eyebrow mb-3">Quick start</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {PRESETS.map((pr) => (
-            <button key={pr.label} onClick={() => preset(pr.p)} disabled={busy} data-cursor="Run"
+            <button key={pr.label} onClick={() => preset(pr.p)} disabled={busy}
               className="group relative overflow-hidden rounded-2xl p-5 text-left ring-1 ring-ring transition-shadow hover:shadow-xl">
               <span aria-hidden className="absolute inset-0 origin-left scale-x-0 bg-ink transition-transform duration-700 ease-[cubic-bezier(.19,1,.22,1)] group-hover:scale-x-100" />
               <span className="relative block text-lg font-semibold transition-colors duration-500 group-hover:text-page">{pr.label}</span>

@@ -149,7 +149,7 @@ export default function Ask() {
           <input id="q" value={q} onChange={(e) => setQ(e.target.value)} maxLength={500} placeholder="When should I charge an EV fleet in MISO in August?"
             className="min-w-0 flex-1 bg-transparent text-2xl tracking-tight outline-none placeholder:text-muted/70 sm:text-4xl" />
           <Magnetic>
-            <button disabled={busy} aria-label="Ask" data-cursor="Ask"
+            <button disabled={busy} aria-label="Ask"
               className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-ink text-2xl text-page transition-all duration-500 hover:scale-110 hover:bg-marginal disabled:opacity-50 sm:h-20 sm:w-20">
               {busy ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-page border-t-transparent" /> : '→'}
             </button>
@@ -161,7 +161,7 @@ export default function Ask() {
         <p className="eyebrow mb-3">Or try to break it</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {EXAMPLES.map((e, i) => (
-            <motion.button key={e.q} onClick={() => run(e.q)} disabled={busy} data-cursor="Ask"
+            <motion.button key={e.q} onClick={() => run(e.q)} disabled={busy}
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 + i * 0.06, duration: 0.8, ease: EASE }}
               whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
               className="flex flex-col justify-between gap-6 rounded-2xl bg-surface p-5 text-left ring-1 ring-ring transition-shadow hover:shadow-xl disabled:opacity-60">

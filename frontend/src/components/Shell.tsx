@@ -66,7 +66,7 @@ export function Nav() {
     <>
       <motion.header className="fixed inset-x-0 top-0 z-50" animate={{ y: hidden ? '-110%' : '0%' }} transition={{ duration: 0.6, ease: EASE }}>
         <div className={`mx-auto flex items-center justify-between gap-4 px-4 py-3 transition-colors duration-500 sm:px-8 ${scrolled && !open ? 'bg-page/80 backdrop-blur-md' : ''}`}>
-          <Link to="/" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight" data-cursor="Home">
+          <Link to="/" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
             <LogoMark /> Marginalis
           </Link>
           <nav className="hidden items-center gap-6 text-[15px] lg:flex" aria-label="Main">
@@ -98,7 +98,7 @@ export function Nav() {
               <ul className="group/menu">
                 {NAV.map((n, i) => (
                   <li key={n.to} className="border-b border-white/10">
-                    <NavLink to={n.to} end={n.end} data-cursor="Go"
+                    <NavLink to={n.to} end={n.end}
                       className={({ isActive }) => `group flex items-baseline gap-4 py-2 transition-all duration-500 group-hover/menu:opacity-40 hover:!opacity-100 hover:pl-6 ${isActive ? 'text-marginal' : ''}`}>
                       <span className="font-mono text-xs text-muted">0{i + 1}</span>
                       <span className="line-mask">
@@ -142,7 +142,7 @@ export function Footer() {
           <h2 className="display text-6xl sm:text-8xl">{onAsk ? <>Plan a<br /><span className="text-marginal">load.</span></> : <>Ask the<br /><span className="text-marginal">data.</span></>}</h2>
           <div className="mt-10 flex flex-wrap items-center gap-6">
             <Magnetic strength={0.5}>
-              <Link to={onAsk ? '/schedule' : '/ask'} data-cursor={onAsk ? 'Plan' : 'Ask'}
+              <Link to={onAsk ? '/schedule' : '/ask'}
                 className="group relative flex h-36 w-36 items-center justify-center rounded-full bg-marginal text-center text-lg font-medium text-white transition-transform duration-500 hover:scale-110">
                 <svg className="spin-slow absolute inset-0" viewBox="0 0 144 144" aria-hidden>
                   <defs><path id="circ" d="M72 72 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0" /></defs>
@@ -167,7 +167,7 @@ export function Footer() {
               <li><a className="link-draw text-ink-2 hover:text-ink" href="https://www.eia.gov/electricity/gridmonitor/" target="_blank" rel="noreferrer">EIA Grid Monitor ↗</a></li>
             </ul>
             <button onClick={() => (lenis ? lenis.scrollTo(0, { duration: 2 }) : window.scrollTo({ top: 0, behavior: 'smooth' }))}
-              className="btn mt-8 border-white/40! py-2! text-xs" data-cursor="Up">Back to top ↑</button>
+              className="btn mt-8 border-white/40! py-2! text-xs">Back to top ↑</button>
           </div>
         </div>
       </div>

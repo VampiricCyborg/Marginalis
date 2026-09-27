@@ -1,4 +1,4 @@
-/* Motion primitives: smooth scroll, custom cursor, reveals, counters, magnetic, marquee.
+/* Motion primitives: smooth scroll, reveals, counters, magnetic, marquee.
    Everything respects prefers-reduced-motion. */
 import Lenis from 'lenis'
 import {
@@ -33,57 +33,6 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     else window.scrollTo(0, 0)
   }, [pathname, lenis])
   return <LenisCtx.Provider value={lenis}>{children}</LenisCtx.Provider>
-}
-
-/* ---------- Custom cursor: dot + ring; grows with a label over [data-cursor] ---------- */
-export function Cursor() {
-  const x = useMotionValue(-100), y = useMotionValue(-100)
-  const sx = useSpring(x, { stiffness: 500, damping: 40, mass: 0.4 })
-  const sy = useSpring(y, { stiffness: 500, damping: 40, mass: 0.4 })
-  const [label, setLabel] = useState<string | null>(null)
-  const [hover, setHover] = useState(false)
-  const [down, setDown] = useState(false)
-  const [enabled, setEnabled] = useState(false)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const on = mq.matches && !reduce.matches
-    setEnabled(on)
-    if (!on) return
-    document.documentElement.classList.add('has-cursor')
-    const move = (e: PointerEvent) => {
-      x.set(e.clientX); y.set(e.clientY); setVisible(true)
-      const t = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-cursor], a, button, select, input, textarea, label, summary')
-      setHover(!!t)
-      setLabel(t?.dataset.cursor ?? null)
-    }
-    const leave = () => setVisible(false)
-    const d = () => setDown(true), u = () => setDown(false)
-    window.addEventListener('pointermove', move)
-    document.addEventListener('pointerleave', leave)
-    window.addEventListener('pointerdown', d); window.addEventListener('pointerup', u)
-    return () => {
-      document.documentElement.classList.remove('has-cursor')
-      window.removeEventListener('pointermove', move)
-      document.removeEventListener('pointerleave', leave)
-      window.removeEventListener('pointerdown', d); window.removeEventListener('pointerup', u)
-    }
-  }, [x, y])
-
-  if (!enabled) return null
-  const size = label ? 88 : hover ? 44 : 12
-  return (
-    <>
-      <motion.div aria-hidden className="pointer-events-none fixed left-0 top-0 z-[100] flex items-center justify-center rounded-full mix-blend-difference"
-        style={{ x: sx, y: sy, translateX: '-50%', translateY: '-50%', background: label ? '#fff' : hover ? 'transparent' : '#fff', border: hover && !label ? '1.5px solid #fff' : 'none' }}
-        animate={{ width: size, height: size, opacity: visible ? 1 : 0, scale: down ? 0.8 : 1 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 30 }}>
-        {label && <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-black">{label}</span>}
-      </motion.div>
-    </>
-  )
 }
 
 /* ---------- Reveal: fades + lifts a block when it enters the viewport ---------- */
