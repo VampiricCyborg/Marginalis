@@ -50,6 +50,12 @@ def cmd_analyze(args: argparse.Namespace) -> None:
     findings.run()
 
 
+def cmd_evaluate(args: argparse.Namespace) -> None:
+    from marginalis.analysis import holdout_report
+
+    holdout_report.run()
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="marginalis")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -73,6 +79,9 @@ def main(argv: list[str] | None = None) -> None:
 
     ana = sub.add_parser("analyze", help="train-split EDA + MEF estimation -> mef_profile, eda_findings.md")
     ana.set_defaults(func=cmd_analyze)
+
+    ev = sub.add_parser("evaluate", help="pre-registered hold-out evaluation (requires frozen method)")
+    ev.set_defaults(func=cmd_evaluate)
 
     args = parser.parse_args(argv)
     logging.basicConfig(
