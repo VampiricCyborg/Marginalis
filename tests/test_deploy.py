@@ -26,10 +26,10 @@ def test_limiter_caps_per_ip_and_reports_retry_after():
     rl.check("1.1.1.1")  # window has passed
 
 
-def test_client_ip_uses_rightmost_forwarded_entry():
+def test_client_ip_uses_first_forwarded_entry():
+    # Render sets the first X-Forwarded-For entry to the real client; later ones are its proxies.
     assert ratelimit.client_ip(_req("203.0.113.9")) == "203.0.113.9"
-    # A client-forged left-most value cannot change the key Render's edge appends.
-    assert ratelimit.client_ip(_req("6.6.6.6, 203.0.113.9")) == "203.0.113.9"
+    assert ratelimit.client_ip(_req("203.0.113.9, 172.64.0.1, 10.0.0.2")) == "203.0.113.9"
     assert ratelimit.client_ip(_req()) == "10.0.0.1"
 
 
@@ -48,8 +48,9 @@ def test_ask_endpoint_returns_429_after_limit(monkeypatch):
     client = TestClient(appmod.app)  # no lifespan: no DB needed
     h = {"X-Forwarded-For": "198.51.100.7"}
     assert [client.post("/api/ask", json={"question": "hello?"}, headers=h).status_code for _ in range(3)] == [200, 200, 429]
-    spoofed = {"X-Forwarded-For": "9.9.9.9, 198.51.100.7"}
-    assert client.post("/api/ask", json={"question": "hello?"}, headers=spoofed).status_code == 429
+    # Same client behind Render's proxies (extra hops appended) shares the bucket.
+    proxied = {"X-Forwarded-For": "198.51.100.7, 172.64.0.1"}
+    assert client.post("/api/ask", json={"question": "hello?"}, headers=proxied).status_code == 429
 
 
 @pytest.mark.parametrize("cmd", ["ingest", "build", "report", "analyze", "evaluate"])
