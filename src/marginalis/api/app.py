@@ -60,7 +60,7 @@ async def lifespan(_: FastAPI):
     STATE.clear()
 
 
-app = FastAPI(title="Marginalis API", version="0.1.1", lifespan=lifespan,
+app = FastAPI(title="Marginalis API", version="0.1.2", lifespan=lifespan,
               description="Marginal vs average CO2 intensity for ERCOT, CAISO and MISO (EIA-930).")
 
 

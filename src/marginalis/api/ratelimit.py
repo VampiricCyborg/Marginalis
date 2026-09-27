@@ -17,17 +17,17 @@ WINDOW_S = 60.0
 
 
 def client_ip(request: Request) -> str:
-    """The caller's IP behind Render's proxy.
+    """The caller's IP behind Render (Cloudflare -> Render load balancer -> app).
 
-    Render puts the real client IP first in X-Forwarded-For (the later entries are its
-    Cloudflare / load-balancer hops, shared by many users), and its documented rate-limit
-    pattern keys on that first entry. Verified on the live service: a client-forged
-    X-Forwarded-For does not change the key.
+    CF-Connecting-IP is set by Cloudflare's edge to the connecting client and overwrites
+    any client-sent value, so it cannot be forged. X-Forwarded-For is NOT used: on Render a
+    client-supplied first entry passes through unchanged (verified on the live service), so
+    keying on it would let anyone bypass the limit. Without the Cloudflare header the key is
+    the socket peer, which is strict but never forgeable.
     """
-    xff = request.headers.get("x-forwarded-for", "")
-    first = xff.split(",")[0].strip()
-    if first:
-        return first
+    cf = request.headers.get("cf-connecting-ip", "").strip()
+    if cf:
+        return cf
     return request.client.host if request.client else "unknown"
 
 
