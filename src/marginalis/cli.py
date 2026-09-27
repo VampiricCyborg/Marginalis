@@ -44,6 +44,12 @@ def cmd_report(args: argparse.Namespace) -> None:
         quality_report.write(conn)
 
 
+def cmd_analyze(args: argparse.Namespace) -> None:
+    from marginalis.analysis import findings
+
+    findings.run()
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="marginalis")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -64,6 +70,9 @@ def main(argv: list[str] | None = None) -> None:
 
     rep = sub.add_parser("report", help="write reports/data_quality.md")
     rep.set_defaults(func=cmd_report)
+
+    ana = sub.add_parser("analyze", help="train-split EDA + MEF estimation -> mef_profile, eda_findings.md")
+    ana.set_defaults(func=cmd_analyze)
 
     args = parser.parse_args(argv)
     logging.basicConfig(
